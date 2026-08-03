@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberPulse | Real-Time Threat Intel</title>
+  <style>
+    :root {
+      --bg-color: #0d1117;
+      --card-bg: #161b22;
+      --border-color: #30363d;
+      --text-main: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent-green: #3fb950;
+      --accent-red: #f85149;
+      --accent-blue: #58a6ff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.5;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border-color);
+      padding: 1.25rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgba(22, 27, 34, 0.8);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: #fff;
+    }
+
+    .live-indicator {
+      width: 10px;
+      height: 10px;
+      background-color: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .status-bar {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .search-input {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      width: 280px;
+      font-size: 0.9rem;
+    }
+
+    .search-input:focus {
+      outline: 1px solid var(--accent-blue);
+    }
+
+    .refresh-btn {
+      background: #21262d;
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.6rem 1rem;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background 0.2s ease;
+    }
+
+    .refresh-btn:hover {
+      background: #30363d;
+    }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .news-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .news-card:hover {
+      transform: translateY(-2px);
+      border-color: #484f58;
+    }
+
+    .card-source {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-blue);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      line-height: 1.35;
+    }
+
+    .card-title a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .card-title a:hover {
+      color: var(--accent-blue);
+    }
+
+    .card-snippet {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.75rem;
+    }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--card-bg) 25%, #21262d 50%, var(--card-bg) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 4px;
+    }
+
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    .skeleton-card {
+      height: 220px;
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <div class="live-indicator"></div>
+      CyberPulse Threat Feed
+    </div>
+    <div class="status-bar" id="status-text">Connecting to intelligence feeds...</div>
+  </header>
+
+  <main>
+    <div class="controls">
+      <input type="text" id="search-bar" class="search-input" placeholder="Filter advisories (e.g., CVE, Zero-day)..." />
+      <button class="refresh-btn" id="refresh-btn">Sync Now</button>
+    </div>
+
+    <div class="news-grid" id="news-container">
+      <!-- Skeletons loaded initially via JS -->
+    </div>
+  </main>
+
+  <script>
+    // Live RSS feeds aggregated via RSS2JSON API
+    const FEEDS = [
+      { name: "The Hacker News", url: "https://feeds.feedburner.com/TheHackersNews" },
+      { name: "BleepingComputer", url: "https://www.bleepingcomputer.com/feed/" },
+      { name: "CISA Advisories", url: "https://www.cisa.gov/cybersecurity-advisories/all.xml" }
+    ];
+
+    let allArticles = [];
+
+    const newsContainer = document.getElementById("news-container");
+    const statusText = document.getElementById("status-text");
+    const searchBar = document.getElementById("search-bar");
+    const refreshBtn = document.getElementById("refresh-btn");
+
+    // Render skeleton placeholders
+    function renderSkeletons() {
+      newsContainer.innerHTML = Array(6)
+        .fill(0)
+        .map(() => `<div class="skeleton-card skeleton"></div>`)
+        .join("");
+    }
+
+    // Fetch and combine articles
+    async function fetchThreatFeeds() {
+      renderSkeletons();
+      statusText.textContent = "Syncing live feeds...";
+      allArticles = [];
+
+      try {
+        const fetchPromises = FEEDS.map(async (feed) => {
+          const apiEndpoint = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`;
+          const response = await fetch(apiEndpoint);
+          const data = await response.json();
+          
+          if (data.status === 'ok') {
+            return data.items.map(item => ({
+              title: item.title,
+              link: item.link,
+              pubDate: new Date(item.pubDate),
+              description: stripHTML(item.description || item.content || ''),
+              source: feed.name
+            }));
+          }
+          return [];
+        });
+
+        const results = await Promise.all(fetchPromises);
+        allArticles = results.flat().sort((a, b) => b.pubDate - a.pubDate);
+
+        statusText.textContent = `Last updated: ${new Date().toLocaleTimeString()} (${allArticles.length} events logged)`;
+        renderArticles(allArticles);
+
+      } catch (err) {
+        console.error("Feed error:", err);
+        statusText.textContent = "Error fetching live feeds. Retrying available sources.";
+      }
+    }
+
+    // Helper: Clean raw HTML from descriptions
+    function stripHTML(htmlStr) {
+      const doc = new DOMParser().parseFromString(htmlStr, 'text/html');
+      return doc.body.textContent || "";
+    }
+
+    // Render articles to DOM
+    function renderArticles(articles) {
+      if (articles.length === 0) {
+        newsContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">No security advisories matched your query.</div>`;
+        return;
+      }
+
+      newsContainer.innerHTML = articles.map(art => `
+        <article class="news-card">
+          <div>
+            <div class="card-source">${escapeHtml(art.source)}</div>
+            <h2 class="card-title">
+              <a href="${escapeHtml(art.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(art.title)}</a>
+            </h2>
+            <p class="card-snippet">${escapeHtml(art.description)}</p>
+          </div>
+          <div class="card-meta">
+            <span>${timeAgo(art.pubDate)}</span>
+            <span>External Source &#8599;</span>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // Escape strings for safety
+    function escapeHtml(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
+    // Relative timestamp renderer
+    function timeAgo(date) {
+      const seconds = Math.floor((new Date() - date) / 1000);
+      let interval = Math.floor(seconds / 3600);
+      if (interval >= 1) return `${interval}h ago`;
+      interval = Math.floor(seconds / 60);
+      if (interval >= 1) return `${interval}m ago`;
+      return "Just now";
+    }
+
+    // Live search filter
+    searchBar.addEventListener("input", (e) => {
+      const term = e.target.value.toLowerCase();
+      const filtered = allArticles.filter(art => 
+        art.title.toLowerCase().includes(term) || 
+        art.description.toLowerCase().includes(term) ||
+        art.source.toLowerCase().includes(term)
+      );
+      renderArticles(filtered);
+    });
+
+    refreshBtn.addEventListener("click", fetchThreatFeeds);
+
+    // Initial load & Auto-sync every 5 minutes
+    fetchThreatFeeds();
+    setInterval(fetchThreatFeeds, 300000);
+  </script>
+</body>
+</html>

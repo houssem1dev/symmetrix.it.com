@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" id="html-root">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Symmetrix | White-Hat Research & Threat Intel</title>
+  <title id="page-title">Symmetrix | White-Hat Research & Threat Intel</title>
 
   <!-- Security Headers -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
@@ -13,7 +13,7 @@
   <!-- Fonts & Leaflet CSS -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Inter:wght@300;400;600;700;800&family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
   <style>
@@ -45,6 +45,10 @@
       background-image: 
         radial-gradient(circle at 50% 0%, rgba(0, 255, 102, 0.04) 0%, transparent 60%),
         radial-gradient(circle at 85% 60%, rgba(0, 191, 255, 0.03) 0%, transparent 40%);
+    }
+
+    body[dir="rtl"] {
+      font-family: 'Cairo', sans-serif;
     }
 
     header {
@@ -90,6 +94,20 @@
     .nav-actions { display: flex; align-items: center; gap: 1rem; }
     .status-bar { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); display: none; }
     @media(min-width: 768px) { .status-bar { display: block; } }
+
+    .lang-select {
+      background: var(--card-bg);
+      color: var(--accent-green);
+      border: 1px solid var(--border-bright);
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .lang-select:hover { border-color: var(--accent-green); }
 
     .btn-primary {
       background: rgba(0, 255, 102, 0.1);
@@ -188,6 +206,7 @@
       margin: 2.5rem auto 0 auto;
       text-align: left;
     }
+    body[dir="rtl"] .radar-container { text-align: right; }
 
     @media(min-width: 1024px) {
       .radar-container { grid-template-columns: 2.3fr 1.1fr; }
@@ -312,6 +331,7 @@
       overflow: hidden;
       text-align: left;
     }
+    body[dir="rtl"] .metric-card { text-align: right; }
 
     .metric-card::before {
       content: '';
@@ -320,6 +340,7 @@
       width: 3px; height: 100%;
       background: var(--accent-green);
     }
+    body[dir="rtl"] .metric-card::before { left: auto; right: 0; }
 
     .metric-value {
       font-size: 1.75rem;
@@ -412,7 +433,9 @@
       grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
       gap: 1.5rem;
       margin-bottom: 4.5rem;
+      text-align: left;
     }
+    body[dir="rtl"] .news-grid { text-align: right; }
 
     .news-card {
       background-color: var(--card-bg);
@@ -494,7 +517,7 @@
       font-family: var(--font-mono);
     }
 
-    /* REDESIGNED RESEARCHER GALLERY STYLES */
+    /* RESEARCHER GALLERY STYLES */
     .researcher-section {
       margin: 5rem 0;
     }
@@ -504,7 +527,9 @@
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
       gap: 2rem;
       margin-top: 2rem;
+      text-align: left;
     }
+    body[dir="rtl"] .researcher-grid { text-align: right; }
 
     .researcher-card {
       background: linear-gradient(145deg, #0a0e17 0%, #060911 100%);
@@ -516,25 +541,10 @@
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
     }
 
-    .researcher-card::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 14px;
-      border: 1px solid rgba(0, 255, 102, 0.2);
-      opacity: 0;
-      transition: opacity 0.35s ease;
-      pointer-events: none;
-    }
-
     .researcher-card:hover {
       border-color: var(--accent-green);
       transform: translateY(-6px);
       box-shadow: 0 15px 40px rgba(0, 255, 102, 0.12);
-    }
-
-    .researcher-card:hover::after {
-      opacity: 1;
     }
 
     .researcher-img-wrapper {
@@ -573,6 +583,7 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
+    body[dir="rtl"] .researcher-badge-overlay { right: auto; left: 1rem; }
 
     .researcher-info {
       padding: 1.75rem;
@@ -609,7 +620,9 @@
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 1.5rem;
       margin-top: 1.5rem;
+      text-align: left;
     }
+    body[dir="rtl"] .services-grid { text-align: right; }
 
     .service-card {
       background: var(--card-bg);
@@ -649,7 +662,9 @@
       justify-content: center;
       padding: 1rem;
       backdrop-filter: blur(6px);
+      text-align: left;
     }
+    body[dir="rtl"] .modal-overlay { text-align: right; }
 
     .modal-content {
       background: var(--card-bg);
@@ -668,6 +683,7 @@
       background: transparent; border: none;
       color: var(--text-muted); font-size: 1.4rem; cursor: pointer;
     }
+    body[dir="rtl"] .close-modal { right: auto; left: 1.25rem; }
     .close-modal:hover { color: #fff; }
 
     .form-group { margin-bottom: 1.25rem; }
@@ -694,9 +710,14 @@
       <div class="live-indicator" title="Feeds Active"></div>
     </div>
     <div class="nav-actions">
-      <div class="status-bar" id="status-text">Initializing feed sync...</div>
+      <select id="lang-switcher" class="lang-select" onchange="switchLanguage(this.value)">
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="ar">العربية</option>
+      </select>
+      <div class="status-bar" id="status-text" data-i18n="initSync">Initializing feed sync...</div>
       <button class="btn-primary" onclick="openModal('report-modal')">
-        <span>⚡</span> Report Vulnerability
+        <span>⚡</span> <span data-i18n="reportVulnBtn">Report Vulnerability</span>
       </button>
     </div>
   </header>
@@ -705,27 +726,27 @@
   <section class="hero">
     <div class="hero-content">
       <span class="hero-badge">
-        <span>●</span> White-Hat Security & Ethical Research
+        <span>●</span> <span data-i18n="heroBadge">White-Hat Security & Ethical Research</span>
       </span>
-      <h1>Protecting Applications Through <span>Responsible Disclosure</span></h1>
-      <p>Symmetrix is an ethical security research group. We identify website bugs, audit infrastructure, and help developers patch security risks safely.</p>
+      <h1 data-i18n="heroTitle">Protecting Applications Through <span>Responsible Disclosure</span></h1>
+      <p data-i18n="heroSubtitle">Symmetrix is an ethical security research group. We identify website bugs, audit infrastructure, and help developers patch security risks safely.</p>
       
       <div class="hero-cta-group">
-        <button class="btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;" onclick="openModal('contact-modal')">
+        <button class="btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;" onclick="openModal('contact-modal')" data-i18n="auditBtn">
           Request Security Audit
         </button>
-        <button class="btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;" onclick="openModal('report-modal')">
+        <button class="btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;" onclick="openModal('report-modal')" data-i18n="submitBugBtn">
           Submit Bug Report
         </button>
       </div>
     </div>
 
-    <!-- HIGH-VISIBILITY RADAR MAP -->
+    <!-- RADAR MAP -->
     <div class="radar-container">
       <div class="map-panel">
         <div class="map-header">
-          <span class="panel-title-text">REAL WORLD MAP TELEMETRY</span>
-          <span style="font-size:0.75rem; color:var(--accent-green); font-family:var(--font-mono);">ACTIVE STREAM</span>
+          <span class="panel-title-text" data-i18n="mapTelemetry">REAL WORLD MAP TELEMETRY</span>
+          <span style="font-size:0.75rem; color:var(--accent-green); font-family:var(--font-mono);" data-i18n="activeStream">ACTIVE STREAM</span>
         </div>
 
         <div id="leaflet-map">
@@ -735,7 +756,7 @@
 
       <div class="telemetry-panel">
         <div class="map-header">
-          <span style="font-size:0.8rem; color:var(--text-muted);">EVENT LOG STREAM</span>
+          <span style="font-size:0.8rem; color:var(--text-muted);" data-i18n="eventLogStream">EVENT LOG STREAM</span>
           <span style="font-size:0.75rem; color:var(--accent-red);">LIVE</span>
         </div>
         <div class="stream-box" id="attack-stream"></div>
@@ -745,15 +766,15 @@
     <div class="hero-metrics">
       <div class="metric-card">
         <div class="metric-value">100%</div>
-        <div class="metric-label">Ethical Disclosure</div>
+        <div class="metric-label" data-i18n="metricEthical">Ethical Disclosure</div>
       </div>
       <div class="metric-card">
-        <div class="metric-value">Encrypted</div>
-        <div class="metric-label">Anonymous Ingestion</div>
+        <div class="metric-value" data-i18n="metricEncrypted">Encrypted</div>
+        <div class="metric-label" data-i18n="metricAnonymous">Anonymous Ingestion</div>
       </div>
       <div class="metric-card">
         <div class="metric-value" id="event-count">0</div>
-        <div class="metric-label">Active Threat Alerts</div>
+        <div class="metric-label" data-i18n="metricThreats">Active Threat Alerts</div>
       </div>
     </div>
   </section>
@@ -762,24 +783,24 @@
   <main>
     <div class="section-header">
       <div>
-        <h2 class="section-title">Security Intelligence Advisories</h2>
-        <p class="section-subtitle">Real-time alerts aggregated across primary cybersecurity advisories.</p>
+        <h2 class="section-title" data-i18n="advisoriesTitle">Security Intelligence Advisories</h2>
+        <p class="section-subtitle" data-i18n="advisoriesSub">Real-time alerts aggregated across primary cybersecurity advisories.</p>
       </div>
     </div>
 
     <div class="controls">
-      <input type="text" id="search-bar" class="search-input" placeholder="Search advisories (e.g., CVE, Zero-day)..." />
-      <button class="refresh-btn" id="refresh-btn">🔄 Refresh Feeds</button>
+      <input type="text" id="search-bar" class="search-input" placeholder="Search advisories (e.g., CVE, Zero-day)..." data-i18n-placeholder="searchPlaceholder" />
+      <button class="refresh-btn" id="refresh-btn">🔄 <span data-i18n="refreshBtn">Refresh Feeds</span></button>
     </div>
 
     <div class="news-grid" id="news-container"></div>
 
-    <!-- REDESIGNED LEAD RESEARCHER GALLERY -->
+    <!-- LEAD RESEARCHER GALLERY -->
     <div class="researcher-section">
       <div class="section-header">
         <div>
-          <h2 class="section-title">Lead Security Researcher</h2>
-          <p class="section-subtitle">Operational profiles and threat intelligence field captures.</p>
+          <h2 class="section-title" data-i18n="researcherTitle">Lead Security Researcher</h2>
+          <p class="section-subtitle" data-i18n="researcherSub">Operational profiles and threat intelligence field captures.</p>
         </div>
       </div>
 
@@ -788,12 +809,12 @@
         <div class="researcher-card">
           <div class="researcher-img-wrapper">
             <img src="367cbd1d-3e95-46ba-b116-e95403944fab.jpg" alt="Threat Intelligence & Anonymous Mask Operations" />
-            <div class="researcher-badge-overlay">Active Intel</div>
+            <div class="researcher-badge-overlay" data-i18n="badge1">Active Intel</div>
           </div>
           <div class="researcher-info">
-            <div class="researcher-tag">Threat Intelligence</div>
-            <h3 class="researcher-title">Anonymous Operations & Mask Protocol</h3>
-            <p class="researcher-desc">Conducting covert threat analysis and simulating advanced adversarial tactics to uncover systemic infrastructure weaknesses before malicious actors strike.</p>
+            <div class="researcher-tag" data-i18n="tag1">Threat Intelligence</div>
+            <h3 class="researcher-title" data-i18n="res1Title">Anonymous Operations & Mask Protocol</h3>
+            <p class="researcher-desc" data-i18n="res1Desc">Conducting covert threat analysis and simulating advanced adversarial tactics to uncover systemic infrastructure weaknesses before malicious actors strike.</p>
           </div>
         </div>
 
@@ -801,12 +822,12 @@
         <div class="researcher-card">
           <div class="researcher-img-wrapper">
             <img src="a262b845-91aa-4615-8ccf-850cba8e6787.jpg" alt="Active Terminal Analysis" />
-            <div class="researcher-badge-overlay">Live Session</div>
+            <div class="researcher-badge-overlay" data-i18n="badge2">Live Session</div>
           </div>
           <div class="researcher-info">
-            <div class="researcher-tag">Vulnerability Research</div>
-            <h3 class="researcher-title">Active Terminal Code Analysis</h3>
-            <p class="researcher-desc">Performing deep-dive source code reviews, database audits, and zero-day patch verifications to secure enterprise web applications against injection flaws.</p>
+            <div class="researcher-tag" data-i18n="tag2">Vulnerability Research</div>
+            <h3 class="researcher-title" data-i18n="res2Title">Active Terminal Code Analysis</h3>
+            <p class="researcher-desc" data-i18n="res2Desc">Performing deep-dive source code reviews, database audits, and zero-day patch verifications to secure enterprise web applications against injection flaws.</p>
           </div>
         </div>
 
@@ -814,12 +835,12 @@
         <div class="researcher-card">
           <div class="researcher-img-wrapper">
             <img src="abd61d5f-4403-468e-a3b1-5bed3270c43b.jpg" alt="Node Telemetry Oversight" />
-            <div class="researcher-badge-overlay">Secured Node</div>
+            <div class="researcher-badge-overlay" data-i18n="badge3">Secured Node</div>
           </div>
           <div class="researcher-info">
-            <div class="researcher-tag">Infrastructure Defense</div>
-            <h3 class="researcher-title">Node Telemetry & Perimeter Defense</h3>
-            <p class="researcher-desc">Monitoring real-time traffic vectors and configuring high-security gateway controls to mitigate unauthorized network intrusions and distributed attacks.</p>
+            <div class="researcher-tag" data-i18n="tag3">Infrastructure Defense</div>
+            <h3 class="researcher-title" data-i18n="res3Title">Node Telemetry & Perimeter Defense</h3>
+            <p class="researcher-desc" data-i18n="res3Desc">Monitoring real-time traffic vectors and configuring high-security gateway controls to mitigate unauthorized network intrusions and distributed attacks.</p>
           </div>
         </div>
       </div>
@@ -827,31 +848,31 @@
 
     <div class="section-header">
       <div>
-        <h2 class="section-title">White-Hat Capabilities</h2>
-        <p class="section-subtitle">Helping business owners and developers build resilient web applications.</p>
+        <h2 class="section-title" data-i18n="capabilitiesTitle">White-Hat Capabilities</h2>
+        <p class="section-subtitle" data-i18n="capabilitiesSub">Helping business owners and developers build resilient web applications.</p>
       </div>
     </div>
 
     <div class="services-grid">
       <div class="service-card">
         <div class="service-icon">🔍</div>
-        <h3>Web Application Auditing</h3>
-        <p>Comprehensive testing to discover XSS, SQLi, CSRF, and authorization flaws before malicious hackers do.</p>
+        <h3 data-i18n="serv1Title">Web Application Auditing</h3>
+        <p data-i18n="serv1Desc">Comprehensive testing to discover XSS, SQLi, CSRF, and authorization flaws before malicious hackers do.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">🛡️</div>
-        <h3>Responsible Disclosure</h3>
-        <p>Private and detailed bug reports with exact reproduction steps delivered directly to website owners.</p>
+        <h3 data-i18n="serv2Title">Responsible Disclosure</h3>
+        <p data-i18n="serv2Desc">Private and detailed bug reports with exact reproduction steps delivered directly to website owners.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">⚙️</div>
-        <h3>Remediation Guidance</h3>
-        <p>Step-by-step assistance for developers on configuring security headers, fixing CORS, and securing endpoints.</p>
+        <h3 data-i18n="serv3Title">Remediation Guidance</h3>
+        <p data-i18n="serv3Desc">Step-by-step assistance for developers on configuring security headers, fixing CORS, and securing endpoints.</p>
       </div>
       <div class="service-card">
         <div class="service-icon">📜</div>
-        <h3>Security Standards</h3>
-        <p>Best practice guidance on OWASP Top 10 vulnerabilities and server hardening procedures.</p>
+        <h3 data-i18n="serv4Title">Security Standards</h3>
+        <p data-i18n="serv4Desc">Best practice guidance on OWASP Top 10 vulnerabilities and server hardening procedures.</p>
       </div>
     </div>
   </main>
@@ -860,8 +881,8 @@
   <div class="modal-overlay" id="report-modal">
     <div class="modal-content">
       <button class="close-modal" onclick="closeModal('report-modal')">&times;</button>
-      <h3 style="color:#fff; margin-bottom:0.4rem; font-size:1.2rem;">Submit Anonymous Bug Report</h3>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;">Transmitted securely to lead security researchers.</p>
+      <h3 style="color:#fff; margin-bottom:0.4rem; font-size:1.2rem;" data-i18n="modalReportTitle">Submit Anonymous Bug Report</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;" data-i18n="modalReportSub">Transmitted securely to lead security researchers.</p>
       
       <form onsubmit="submitAnonymousForm(event, this, 'report-modal')">
         <input type="hidden" name="_subject" value="[Symmetrix] New Vulnerability / Bug Report">
@@ -869,28 +890,28 @@
         <input type="hidden" name="_template" value="table">
 
         <div class="form-group">
-          <label>Your Email (Optional for reply)</label>
+          <label data-i18n="formEmail">Your Email (Optional for reply)</label>
           <input type="email" name="Reply_To_Email" placeholder="optional@domain.com" />
         </div>
         <div class="form-group">
-          <label>Target Website / Domain</label>
+          <label data-i18n="formDomain">Target Website / Domain</label>
           <input type="url" name="Target_Domain" placeholder="https://example.com" required />
         </div>
         <div class="form-group">
-          <label>Vulnerability Category</label>
+          <label data-i18n="formVulnType">Vulnerability Category</label>
           <select name="Vulnerability_Type">
-            <option>Cross-Site Scripting (XSS)</option>
-            <option>SQL Injection (SQLi)</option>
-            <option>Missing Security Headers</option>
-            <option>Authentication Bypass</option>
-            <option>Other Bug</option>
+            <option data-i18n="optXSS">Cross-Site Scripting (XSS)</option>
+            <option data-i18n="optSQLi">SQL Injection (SQLi)</option>
+            <option data-i18n="optHeaders">Missing Security Headers</option>
+            <option data-i18n="optAuth">Authentication Bypass</option>
+            <option data-i18n="optOther">Other Bug</option>
           </select>
         </div>
         <div class="form-group">
-          <label>Reproduction Details</label>
-          <textarea name="Bug_Details" rows="4" placeholder="Detail reproduction steps..." required></textarea>
+          <label data-i18n="formDetails">Reproduction Details</label>
+          <textarea name="Bug_Details" rows="4" placeholder="Detail reproduction steps..." data-i18n-placeholder="detailsPlaceholder" required></textarea>
         </div>
-        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.75rem;">Send Bug Report</button>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.75rem;" data-i18n="sendReportBtn">Send Bug Report</button>
       </form>
     </div>
   </div>
@@ -898,8 +919,8 @@
   <div class="modal-overlay" id="contact-modal">
     <div class="modal-content">
       <button class="close-modal" onclick="closeModal('contact-modal')">&times;</button>
-      <h3 style="color:#fff; margin-bottom:0.4rem; font-size:1.2rem;">Request Security Audit</h3>
-      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;">Send a private inquiry regarding penetration testing.</p>
+      <h3 style="color:#fff; margin-bottom:0.4rem; font-size:1.2rem;" data-i18n="modalAuditTitle">Request Security Audit</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;" data-i18n="modalAuditSub">Send a private inquiry regarding penetration testing.</p>
       
       <form onsubmit="submitAnonymousForm(event, this, 'contact-modal')">
         <input type="hidden" name="_subject" value="[Symmetrix] New Security Audit Request">
@@ -907,28 +928,274 @@
         <input type="hidden" name="_template" value="table">
 
         <div class="form-group">
-          <label>Name or Organization</label>
+          <label data-i18n="formName">Name or Organization</label>
           <input type="text" name="Sender_Name" placeholder="Client Name" required />
         </div>
         <div class="form-group">
-          <label>Contact Email</label>
+          <label data-i18n="formContactEmail">Contact Email</label>
           <input type="email" name="Contact_Email" placeholder="name@company.com" required />
         </div>
         <div class="form-group">
-          <label>Audit Scope & Message</label>
-          <textarea name="Audit_Message" rows="4" placeholder="Provide target domains..." required></textarea>
+          <label data-i18n="formScope">Audit Scope & Message</label>
+          <textarea name="Audit_Message" rows="4" placeholder="Provide target domains..." data-i18n-placeholder="scopePlaceholder" required></textarea>
         </div>
-        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.75rem;">Submit Audit Request</button>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.75rem;" data-i18n="sendAuditBtn">Submit Audit Request</button>
       </form>
     </div>
   </div>
 
   <footer>
-    <p>&copy; 2026 Symmetrix Security Research. Defensive cybersecurity initiative.</p>
+    <p data-i18n="footerText">&copy; 2026 Symmetrix Security Research. Defensive cybersecurity initiative.</p>
   </footer>
 
   <!-- LEAFLET SCRIPT -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    /* MULTI-LANGUAGE DICTIONARY */
+    const translations = {
+      en: {
+        pageTitle: "Symmetrix | White-Hat Research & Threat Intel",
+        initSync: "Initializing feed sync...",
+        reportVulnBtn: "Report Vulnerability",
+        heroBadge: "White-Hat Security & Ethical Research",
+        heroTitle: "Protecting Applications Through <span>Responsible Disclosure</span>",
+        heroSubtitle: "Symmetrix is an ethical security research group. We identify website bugs, audit infrastructure, and help developers patch security risks safely.",
+        auditBtn: "Request Security Audit",
+        submitBugBtn: "Submit Bug Report",
+        mapTelemetry: "REAL WORLD MAP TELEMETRY",
+        activeStream: "ACTIVE STREAM",
+        eventLogStream: "EVENT LOG STREAM",
+        metricEthical: "Ethical Disclosure",
+        metricEncrypted: "Encrypted",
+        metricAnonymous: "Anonymous Ingestion",
+        metricThreats: "Active Threat Alerts",
+        advisoriesTitle: "Security Intelligence Advisories",
+        advisoriesSub: "Real-time alerts aggregated across primary cybersecurity advisories.",
+        searchPlaceholder: "Search advisories (e.g., CVE, Zero-day)...",
+        refreshBtn: "Refresh Feeds",
+        researcherTitle: "Lead Security Researcher",
+        researcherSub: "Operational profiles and threat intelligence field captures.",
+        badge1: "Active Intel",
+        tag1: "Threat Intelligence",
+        res1Title: "Anonymous Operations & Mask Protocol",
+        res1Desc: "Conducting covert threat analysis and simulating advanced adversarial tactics to uncover systemic infrastructure weaknesses before malicious actors strike.",
+        badge2: "Live Session",
+        tag2: "Vulnerability Research",
+        res2Title: "Active Terminal Code Analysis",
+        res2Desc: "Performing deep-dive source code reviews, database audits, and zero-day patch verifications to secure enterprise web applications against injection flaws.",
+        badge3: "Secured Node",
+        tag3: "Infrastructure Defense",
+        res3Title: "Node Telemetry & Perimeter Defense",
+        res3Desc: "Monitoring real-time traffic vectors and configuring high-security gateway controls to mitigate unauthorized network intrusions and distributed attacks.",
+        capabilitiesTitle: "White-Hat Capabilities",
+        capabilitiesSub: "Helping business owners and developers build resilient web applications.",
+        serv1Title: "Web Application Auditing",
+        serv1Desc: "Comprehensive testing to discover XSS, SQLi, CSRF, and authorization flaws before malicious hackers do.",
+        serv2Title: "Responsible Disclosure",
+        serv2Desc: "Private and detailed bug reports with exact reproduction steps delivered directly to website owners.",
+        serv3Title: "Remediation Guidance",
+        serv3Desc: "Step-by-step assistance for developers on configuring security headers, fixing CORS, and securing endpoints.",
+        serv4Title: "Security Standards",
+        serv4Desc: "Best practice guidance on OWASP Top 10 vulnerabilities and server hardening procedures.",
+        modalReportTitle: "Submit Anonymous Bug Report",
+        modalReportSub: "Transmitted securely to lead security researchers.",
+        formEmail: "Your Email (Optional for reply)",
+        formDomain: "Target Website / Domain",
+        formVulnType: "Vulnerability Category",
+        optXSS: "Cross-Site Scripting (XSS)",
+        optSQLi: "SQL Injection (SQLi)",
+        optHeaders: "Missing Security Headers",
+        optAuth: "Authentication Bypass",
+        optOther: "Other Bug",
+        formDetails: "Reproduction Details",
+        detailsPlaceholder: "Detail reproduction steps...",
+        sendReportBtn: "Send Bug Report",
+        modalAuditTitle: "Request Security Audit",
+        modalAuditSub: "Send a private inquiry regarding penetration testing.",
+        formName: "Name or Organization",
+        formContactEmail: "Contact Email",
+        formScope: "Audit Scope & Message",
+        scopePlaceholder: "Provide target domains...",
+        sendAuditBtn: "Submit Audit Request",
+        footerText: "&copy; 2026 Symmetrix Security Research. Defensive cybersecurity initiative."
+      },
+      fr: {
+        pageTitle: "Symmetrix | Recherche White-Hat & Threat Intel",
+        initSync: "Initialisation de la synchro...",
+        reportVulnBtn: "Signaler une faille",
+        heroBadge: "Sécurité White-Hat & Recherche Éthique",
+        heroTitle: "Protéger les applications par la <span>Divulgation Responsable</span>",
+        heroSubtitle: "Symmetrix est un groupe de recherche en sécurité éthique. Nous identifions les bugs, auditons les infrastructures et aidons à corriger les risques.",
+        auditBtn: "Demander un audit",
+        submitBugBtn: "Soumettre un rapport",
+        mapTelemetry: "TÉLÉMÉTRIE DE LA CARTE EN DIRECT",
+        activeStream: "FLUX ACTIF",
+        eventLogStream: "JOURNAL DES ÉVÉNEMENTS",
+        metricEthical: "Divulgation Éthique",
+        metricEncrypted: "Chiffré",
+        metricAnonymous: "Ingestion Anonyme",
+        metricThreats: "Alertes Actives",
+        advisoriesTitle: "Avis de Sécurité & Intelligence",
+        advisoriesSub: "Alertes en temps réel agrégées à partir des principaux flux de cybersécurité.",
+        searchPlaceholder: "Rechercher des avis (ex: CVE, Zero-day)...",
+        refreshBtn: "Actualiser",
+        researcherTitle: "Chercheur en Sécurité Principal",
+        researcherSub: "Profils opérationnels et captures de cyber-intelligence.",
+        badge1: "Intel Actif",
+        tag1: "Renseignement sur les Menaces",
+        res1Title: "Opérations Anonymes & Protocole Masqué",
+        res1Desc: "Conduite d'analyses de menaces et simulation de tactiques contradictoires avancées pour découvrir les faiblesses d'infrastructure avant les acteurs malveillants.",
+        badge2: "Session Live",
+        tag2: "Recherche de Vulnérabilités",
+        res2Title: "Analyse de Code Terminal Actif",
+        res2Desc: "Réalisation d'audits de code source, de bases de données et de vérification de patchs zero-day pour sécuriser les applications d'entreprise.",
+        badge3: "Nœud Sécurisé",
+        tag3: "Défense d'Infrastructure",
+        res3Title: "Télémétrie des Nœuds & Défense Périmétrique",
+        res3Desc: "Surveillance des vecteurs de trafic en temps réel et configuration des contrôles de passerelle haute sécurité pour contrer les intrusions.",
+        capabilitiesTitle: "Capacités White-Hat",
+        capabilitiesSub: "Aider les propriétaires et développeurs à créer des applications résilientes.",
+        serv1Title: "Audit d'Applications Web",
+        serv1Desc: "Tests complets pour découvrir XSS, SQLi, CSRF et failles d'autorisation avant les pirates.",
+        serv2Title: "Divulgation Responsable",
+        serv2Desc: "Rapports de bugs privés et détaillés avec étapes de reproduction exactes livrés aux propriétaires.",
+        serv3Title: "Conseils de Remédiation",
+        serv3Desc: "Assistance étape par étape pour configurer les en-têtes de sécurité, corriger CORS et sécuriser les points de terminaison.",
+        serv4Title: "Normes de Sécurité",
+        serv4Desc: "Conseils sur les vulnérabilités du Top 10 OWASP et procédures de durcissement des serveurs.",
+        modalReportTitle: "Soumettre un rapport anonyme",
+        modalReportSub: "Transmis en toute sécurité aux chercheurs principaux.",
+        formEmail: "Votre e-mail (Optionnel pour réponse)",
+        formDomain: "Site Web / Domaine Cible",
+        formVulnType: "Catégorie de Vulnérabilité",
+        optXSS: "Cross-Site Scripting (XSS)",
+        optSQLi: "Injection SQL (SQLi)",
+        optHeaders: "En-têtes de sécurité manquants",
+        optAuth: "Contournement d'authentification",
+        optOther: "Autre Bug",
+        formDetails: "Détails de Reproduction",
+        detailsPlaceholder: "Détailler les étapes de reproduction...",
+        sendReportBtn: "Envoyer le Rapport",
+        modalAuditTitle: "Demander un Audit de Sécurité",
+        modalAuditSub: "Envoyez une demande privée concernant les tests d'intrusion.",
+        formName: "Nom ou Organisation",
+        formContactEmail: "E-mail de Contact",
+        formScope: "Portée de l'Audit & Message",
+        scopePlaceholder: "Fournir les domaines cibles...",
+        sendAuditBtn: "Soumettre la Demande",
+        footerText: "&copy; 2026 Symmetrix Security Research. Initiative de cybersécurité défensive."
+      },
+      ar: {
+        pageTitle: "سيمتريكس | أبحاث القبعات البيضاء واستخبارات التهديدات",
+        initSync: "جاري مزامنة خلاصات البيانات...",
+        reportVulnBtn: "الإبلاغ عن ثغرة",
+        heroBadge: "أمن القبعات البيضاء والأبحاث الأخلاقية",
+        heroTitle: "حماية التطبيقات من خلال <span>الإفصاح المسؤول</span>",
+        heroSubtitle: "سيمتريكس هي مجموعة أبحاث أمنية أخلاقية. نكتشف ثغرات المواقع، ندقق البنية التحتية، ونساعد المطورين على إصلاح المخاطر بأمان.",
+        auditBtn: "طلب تدقيق أمني",
+        submitBugBtn: "إرسال تقرير خطأ",
+        mapTelemetry: "قياس خريطة العالم الحية",
+        activeStream: "البث النشط",
+        eventLogStream: "سجل الأحداث المباشر",
+        metricEthical: "إفصاح أخلاقي",
+        metricEncrypted: "مشفر بالكامل",
+        metricAnonymous: "تلقي مجهول الهوية",
+        metricThreats: "تنبيهات التهديدات النشطة",
+        advisoriesTitle: "إشعارات الاستخبارات الأمنية",
+        advisoriesSub: "تنبيهات في الوقت الفعلي مجدولة عبر مصادر الأمن السيبراني الرئيسية.",
+        searchPlaceholder: "البحث في الإشعارات (مثال: CVE، ثغرة صفرية)...",
+        refreshBtn: "تحديث الخلاصات",
+        researcherTitle: "كبير الباحثين الأمنيين",
+        researcherSub: "الملفات التشغيلية ولقطات استخبارات التهديدات.",
+        badge1: "معلومات نشطة",
+        tag1: "استخبارات التهديدات",
+        res1Title: "العمليات السرية وبروتوكول القناع",
+        res1Desc: "إجراء تحليل خفي للتهديدات ومحاكاة التكتيكات الهجومية المتقدمة للكشف عن نقاط الضعف النظامية قبل هجمات الخصوم.",
+        badge2: "جلسة مباشرة",
+        tag2: "أبحاث الثغرات",
+        res2Title: "تحليل كود المحطة الطرفية النشط",
+        res2Desc: "إجراء مراجعات عميقة للكشف عن الشفرات المصدرية، تدقيق قواعد البيانات، والتحقق من إصلاحات الثغرات لحماية تطبيقات الشركات.",
+        badge3: "عقدة مؤمنة",
+        tag3: "دفاع البنية التحتية",
+        res3Title: "قياس العقد والدفاع المحيطي",
+        res3Desc: "مراقبة متجهات حركة المرور في الوقت الفعلي وتكوين ضوابط بوابة عالية الأمان للتخفيف من الاختراقات غير المرغوب فيها.",
+        capabilitiesTitle: "قدرات القبعات البيضاء",
+        capabilitiesSub: "مساعدة أصحاب الأعمال والمطورين على بناء تطبيقات ويب مرنة ومحصنة.",
+        serv1Title: "تدقيق تطبيقات الويب",
+        serv1Desc: "اختبارات شاملة لاكتشاف ثغرات XSS، SQLi، CSRF وصلاحيات الوصول قبل القراصنة.",
+        serv2Title: "الإفصاح المسؤول",
+        serv2Desc: "تقارير أخطاء خاصة ومفصلة مع خطوات إعادة الإنتاج الدقيقة تسلم مباشرة لمالكي المواقع.",
+        serv3Title: "إرشادات المعالجة",
+        serv3Desc: "مساعدة خطوة بخطوة للمطورين في تكوين رؤوس الأمان، إصلاح CORS، وتأمين نقاط النهاية.",
+        serv4Title: "معايير الأمان",
+        serv4Desc: "إرشادات أفضل الممارسات حول أخطر 10 ثغرات في OWASP وإجراءات تصلب الخوادم.",
+        modalReportTitle: "إرسال تقرير خطأ مجهول",
+        modalReportSub: "يتم إرسالها بشكل آمن تماماً إلى كبار الباحثين الأمنيين.",
+        formEmail: "بريدك الإلكتروني (اختياري للرد)",
+        formDomain: "موقع الويب المستهدف / النطاق",
+        formVulnType: "فئة الثغرة الأمنية",
+        optXSS: "هجمات البرمجة النصية عبر المواقع (XSS)",
+        optSQLi: "حقن قواعد البيانات (SQLi)",
+        optHeaders: "رؤوس الأمان المفقودة",
+        optAuth: "تجاوز المصادقة",
+        optOther: "خطأ آخر",
+        formDetails: "تفاصيل إعادة إنتاج الثغرة",
+        detailsPlaceholder: "اذكر خطوات إعادة إنتاج الخطأ بالتفصيل...",
+        sendReportBtn: "إرسال تقرير الخطأ",
+        modalAuditTitle: "طلب تدقيق أمني شامل",
+        modalAuditSub: "أرسل استفساراً خاصاً بخصوص اختبار الاختراق الأمني.",
+        formName: "الاسم أو المؤسسة",
+        formContactEmail: "بريد التواصل",
+        formScope: "نطاق التدقيق والرسالة",
+        scopePlaceholder: "أدخل النطاقات المستهدفة...",
+        sendAuditBtn: "تقديم طلب التدقيق",
+        footerText: "&copy; 2026 سيمتريكس للأبحاث الأمنية. مبادرة الدفاع السيبراني."
+      }
+    };
+
+    function switchLanguage(lang) {
+      const t = translations[lang];
+      if (!t) return;
+
+      // Update direction for Arabic
+      const root = document.getElementById("html-root");
+      if (lang === 'ar') {
+        root.setAttribute("dir", "rtl");
+      } else {
+        root.setAttribute("dir", "ltr");
+      }
+
+      // Update page title
+      document.getElementById("page-title").textContent = t.pageTitle;
+
+      // Update all elements with data-i18n attribute
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (t[key]) {
+          el.innerHTML = t[key];
+        }
+      });
+
+      // Update placeholders
+      document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (t[key]) {
+          el.placeholder = t[key];
+        }
+      });
+
+      // Save preference
+      localStorage.setItem("symmetrix_lang", lang);
+    }
+
+    // Auto-load saved language on startup
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedLang = localStorage.getItem("symmetrix_lang") || "en";
+      document.getElementById("lang-switcher").value = savedLang;
+      switchLanguage(savedLang);
+    });
+  </script>
 
   <script>
     const map = L.map('leaflet-map', {
@@ -949,9 +1216,12 @@
     const ctx = canvas.getContext("2d");
 
     function resizeCanvas() {
-      const rect = document.getElementById("leaflet-map").getBoundingClientRect();
-      canvas.width = rect.width;
-      canvas.height = rect.height;
+      const mapEl = document.getElementById("leaflet-map");
+      if (mapEl) {
+        const rect = mapEl.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+      }
     }
     window.addEventListener("resize", resizeCanvas);
     setTimeout(resizeCanvas, 200);
@@ -973,6 +1243,7 @@
     const attackStream = document.getElementById("attack-stream");
 
     function triggerAttackAnimation() {
+      if (!attackStream) return;
       const src = geoNodes[Math.floor(Math.random() * geoNodes.length)];
       let dst = geoNodes[Math.floor(Math.random() * geoNodes.length)];
       while (src === dst) { dst = geoNodes[Math.floor(Math.random() * geoNodes.length)]; }
@@ -1054,6 +1325,7 @@
     const eventCountEl = document.getElementById("event-count");
 
     function renderSkeletons() {
+      if (!newsContainer) return;
       newsContainer.innerHTML = Array(6)
         .fill(0)
         .map(() => `<div class="skeleton-card skeleton"></div>`)
@@ -1062,7 +1334,7 @@
 
     async function fetchThreatFeeds() {
       renderSkeletons();
-      statusText.textContent = "Syncing live feeds...";
+      if (statusText) statusText.textContent = "Syncing live feeds...";
       allArticles = [];
 
       try {
@@ -1086,13 +1358,13 @@
         const results = await Promise.all(fetchPromises);
         allArticles = results.flat().sort((a, b) => b.pubDate - a.pubDate);
 
-        statusText.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
-        eventCountEl.textContent = allArticles.length;
+        if (statusText) statusText.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+        if (eventCountEl) eventCountEl.textContent = allArticles.length;
         renderArticles(allArticles);
 
       } catch (err) {
         console.error("Feed error:", err);
-        statusText.textContent = "Error fetching live feeds.";
+        if (statusText) statusText.textContent = "Error fetching live feeds.";
       }
     }
 
@@ -1112,6 +1384,7 @@
     }
 
     function renderArticles(articles) {
+      if (!newsContainer) return;
       if (articles.length === 0) {
         newsContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">No security advisories found.</div>`;
         return;
@@ -1152,17 +1425,19 @@
       return "Just now";
     }
 
-    searchBar.addEventListener("input", (e) => {
-      const term = e.target.value.toLowerCase();
-      const filtered = allArticles.filter(art => 
-        art.title.toLowerCase().includes(term) || 
-        art.description.toLowerCase().includes(term) ||
-        art.source.toLowerCase().includes(term)
-      );
-      renderArticles(filtered);
-    });
+    if (searchBar) {
+      searchBar.addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase();
+        const filtered = allArticles.filter(art => 
+          art.title.toLowerCase().includes(term) || 
+          art.description.toLowerCase().includes(term) ||
+          art.source.toLowerCase().includes(term)
+        );
+        renderArticles(filtered);
+      });
+    }
 
-    refreshBtn.addEventListener("click", fetchThreatFeeds);
+    if (refreshBtn) refreshBtn.addEventListener("click", fetchThreatFeeds);
 
     async function submitAnonymousForm(event, formElement, modalId) {
       event.preventDefault();

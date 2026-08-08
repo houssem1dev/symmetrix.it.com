@@ -7,7 +7,7 @@
 
   <!-- Security Headers -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https://api.rss2json.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.rss2json.com https://formsubmit.co;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https: data:; script-src 'self' 'unsafe-inline' https://api.rss2json.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.rss2json.com https://formsubmit.co;" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
 
   <!-- Fonts & Leaflet CSS -->
@@ -494,6 +494,75 @@
       font-family: var(--font-mono);
     }
 
+    /* LEAD RESEARCHER GALLERY STYLES */
+    .researcher-section {
+      margin: 4.5rem 0;
+    }
+
+    .researcher-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 1.25rem;
+      margin-top: 1.5rem;
+    }
+
+    .researcher-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .researcher-card:hover {
+      border-color: var(--accent-green);
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(0, 255, 102, 0.15);
+    }
+
+    .researcher-img-wrapper {
+      width: 100%;
+      height: 280px;
+      overflow: hidden;
+      position: relative;
+      background: #0d1322;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .researcher-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform 0.4s ease;
+    }
+
+    .researcher-card:hover .researcher-img-wrapper img {
+      transform: scale(1.05);
+    }
+
+    .researcher-info {
+      padding: 1rem;
+      font-family: var(--font-mono);
+    }
+
+    .researcher-tag {
+      font-size: 0.65rem;
+      color: var(--accent-green);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.25rem;
+    }
+
+    .researcher-title {
+      font-size: 0.85rem;
+      color: #fff;
+      font-weight: 600;
+    }
+
     .services-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -663,6 +732,58 @@
     </div>
 
     <div class="news-grid" id="news-container"></div>
+
+    <!-- LEAD RESEARCHER GALLERY -->
+    <div class="researcher-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Lead Security Researcher</h2>
+          <p class="section-subtitle">Operational profiles and threat intelligence field captures.</p>
+        </div>
+      </div>
+
+      <div class="researcher-grid">
+        <div class="researcher-card">
+          <div class="researcher-img-wrapper">
+            <img src="367cbd1d-3e95-46ba-b116-e95403944fab.jpg" alt="Lead Researcher - Access Granted" />
+          </div>
+          <div class="researcher-info">
+            <div class="researcher-tag">Designation</div>
+            <div class="researcher-title">Threat Intel / Anon Mask</div>
+          </div>
+        </div>
+
+        <div class="researcher-card">
+          <div class="researcher-img-wrapper">
+            <img src="a262b845-91aa-4615-8ccf-850cba8e6787.jpg" alt="Lead Researcher - Terminal Session" />
+          </div>
+          <div class="researcher-info">
+            <div class="researcher-tag">Operation</div>
+            <div class="researcher-title">Active Terminal Analysis</div>
+          </div>
+        </div>
+
+        <div class="researcher-card">
+          <div class="researcher-img-wrapper">
+            <img src="7d5a1f0f-3c98-4b86-b487-ac99be951bba.jpg" alt="Lead Researcher - Executive Brief" />
+          </div>
+          <div class="researcher-info">
+            <div class="researcher-tag">Clearance</div>
+            <div class="researcher-title">Executive Threat Audit</div>
+          </div>
+        </div>
+
+        <div class="researcher-card">
+          <div class="researcher-img-wrapper">
+            <img src="abd61d5f-4403-468e-a3b1-5bed3270c43b.jpg" alt="Lead Researcher - Node Operations" />
+          </div>
+          <div class="researcher-info">
+            <div class="researcher-tag">Infrastructure</div>
+            <div class="researcher-title">Node Telemetry Oversight</div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <div class="section-header">
       <div>

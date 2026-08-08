@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CyberPulse | White-Hat Research & Threat Intel</title>
+  <title>Symmetrix | White-Hat Research & Threat Intel</title>
 
   <!-- Security Headers -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
@@ -26,7 +26,6 @@
       --text-main: #e2e8f0;
       --text-muted: #8092b0;
       
-      /* Cyber Accents */
       --accent-green: #00ff66;
       --accent-green-glow: rgba(0, 255, 102, 0.25);
       --accent-red: #ff2a4b;
@@ -48,7 +47,6 @@
         radial-gradient(circle at 85% 60%, rgba(0, 191, 255, 0.03) 0%, transparent 40%);
     }
 
-    /* HEADER */
     header {
       border-bottom: 1px solid var(--border-color);
       padding: 0.85rem 2rem;
@@ -133,7 +131,6 @@
 
     .btn-secondary:hover { background: var(--card-hover); border-color: var(--border-bright); }
 
-    /* HERO SECTION */
     .hero {
       border-bottom: 1px solid var(--border-color);
       padding: 3rem 1.5rem 2rem 1.5rem;
@@ -142,10 +139,7 @@
       background: linear-gradient(180deg, rgba(15, 20, 28, 0.4) 0%, rgba(8, 11, 16, 1) 100%);
     }
 
-    .hero-content {
-      max-width: 850px;
-      margin: 0 auto;
-    }
+    .hero-content { max-width: 850px; margin: 0 auto; }
 
     .hero-badge {
       display: inline-flex;
@@ -184,14 +178,8 @@
       margin-right: auto;
     }
 
-    .hero-cta-group {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-    }
+    .hero-cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
 
-    /* RADAR & MAP */
     .radar-container {
       display: grid;
       grid-template-columns: 1fr;
@@ -234,7 +222,6 @@
       letter-spacing: 0.08em;
     }
 
-    /* HIGH VISIBILITY LEAFLET MAP */
     #leaflet-map {
       width: 100%;
       height: 400px;
@@ -242,7 +229,6 @@
       background: #081124;
       position: relative;
       z-index: 1;
-      /* Adjusted filters to make continents bright green/cyan and fully visible */
       filter: brightness(1.75) contrast(1.5) saturate(1.8) hue-rotate(60deg);
     }
 
@@ -350,7 +336,6 @@
       margin-top: 0.2rem;
     }
 
-    /* MAIN CONTENT */
     main {
       max-width: 1250px;
       margin: 3rem auto;
@@ -595,7 +580,7 @@
   <header>
     <div class="brand">
       <span class="brand-shield">🛡️</span>
-      <span>CyberPulse</span>
+      <span>Symmetrix</span>
       <div class="live-indicator" title="Feeds Active"></div>
     </div>
     <div class="nav-actions">
@@ -613,7 +598,7 @@
         <span>●</span> White-Hat Security & Ethical Research
       </span>
       <h1>Protecting Applications Through <span>Responsible Disclosure</span></h1>
-      <p>CyberPulse is an ethical security research group. We identify website bugs, audit infrastructure, and help developers patch security risks safely.</p>
+      <p>Symmetrix is an ethical security research group. We identify website bugs, audit infrastructure, and help developers patch security risks safely.</p>
       
       <div class="hero-cta-group">
         <button class="btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;" onclick="openModal('contact-modal')">
@@ -718,7 +703,7 @@
       <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;">Transmitted securely to lead security researchers.</p>
       
       <form onsubmit="submitAnonymousForm(event, this, 'report-modal')">
-        <input type="hidden" name="_subject" value="[CyberPulse] New Vulnerability / Bug Report">
+        <input type="hidden" name="_subject" value="[Symmetrix] New Vulnerability / Bug Report">
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_template" value="table">
 
@@ -756,7 +741,7 @@
       <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;">Send a private inquiry regarding penetration testing.</p>
       
       <form onsubmit="submitAnonymousForm(event, this, 'contact-modal')">
-        <input type="hidden" name="_subject" value="[CyberPulse] New Security Audit Request">
+        <input type="hidden" name="_subject" value="[Symmetrix] New Security Audit Request">
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_template" value="table">
 
@@ -778,7 +763,7 @@
   </div>
 
   <footer>
-    <p>&copy; 2026 CyberPulse Security Research. Defensive cybersecurity initiative.</p>
+    <p>&copy; 2026 Symmetrix Security Research. Defensive cybersecurity initiative.</p>
   </footer>
 
   <!-- LEAFLET SCRIPT -->

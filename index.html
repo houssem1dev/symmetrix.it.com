@@ -494,42 +494,55 @@
       font-family: var(--font-mono);
     }
 
-    /* LEAD RESEARCHER GALLERY STYLES */
+    /* REDESIGNED RESEARCHER GALLERY STYLES */
     .researcher-section {
-      margin: 4.5rem 0;
+      margin: 5rem 0;
     }
 
     .researcher-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-      gap: 1.25rem;
-      margin-top: 1.5rem;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
     }
 
     .researcher-card {
-      background: var(--card-bg);
+      background: linear-gradient(145deg, #0a0e17 0%, #060911 100%);
       border: 1px solid var(--border-color);
-      border-radius: 10px;
+      border-radius: 14px;
       overflow: hidden;
-      transition: all 0.3s ease;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .researcher-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 14px;
+      border: 1px solid rgba(0, 255, 102, 0.2);
+      opacity: 0;
+      transition: opacity 0.35s ease;
+      pointer-events: none;
     }
 
     .researcher-card:hover {
       border-color: var(--accent-green);
-      transform: translateY(-4px);
-      box-shadow: 0 10px 30px rgba(0, 255, 102, 0.15);
+      transform: translateY(-6px);
+      box-shadow: 0 15px 40px rgba(0, 255, 102, 0.12);
+    }
+
+    .researcher-card:hover::after {
+      opacity: 1;
     }
 
     .researcher-img-wrapper {
       width: 100%;
-      height: 280px;
+      height: 320px;
       overflow: hidden;
       position: relative;
-      background: #0d1322;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      background: #020406;
     }
 
     .researcher-img-wrapper img {
@@ -537,30 +550,58 @@
       height: 100%;
       object-fit: cover;
       object-position: center top;
-      transition: transform 0.4s ease;
+      transition: transform 0.5s ease;
+      filter: contrast(1.05) saturate(1.1);
     }
 
     .researcher-card:hover .researcher-img-wrapper img {
-      transform: scale(1.05);
+      transform: scale(1.06);
+    }
+
+    .researcher-badge-overlay {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(4, 6, 9, 0.85);
+      border: 1px solid rgba(0, 255, 102, 0.4);
+      color: var(--accent-green);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      backdrop-filter: blur(6px);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .researcher-info {
-      padding: 1rem;
+      padding: 1.75rem;
       font-family: var(--font-mono);
     }
 
     .researcher-tag {
-      font-size: 0.65rem;
+      font-size: 0.7rem;
       color: var(--accent-green);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 0.25rem;
+      letter-spacing: 0.08em;
+      margin-bottom: 0.4rem;
+      font-weight: 700;
     }
 
     .researcher-title {
-      font-size: 0.85rem;
+      font-size: 1.15rem;
       color: #fff;
-      font-weight: 600;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: -0.01em;
+    }
+
+    .researcher-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      font-family: 'Inter', sans-serif;
     }
 
     .services-grid {
@@ -733,7 +774,7 @@
 
     <div class="news-grid" id="news-container"></div>
 
-    <!-- LEAD RESEARCHER GALLERY -->
+    <!-- REDESIGNED LEAD RESEARCHER GALLERY -->
     <div class="researcher-section">
       <div class="section-header">
         <div>
@@ -743,33 +784,42 @@
       </div>
 
       <div class="researcher-grid">
+        <!-- Researcher Card 1: Mask / Threat Intel -->
         <div class="researcher-card">
           <div class="researcher-img-wrapper">
-            <img src="367cbd1d-3e95-46ba-b116-e95403944fab.jpg" alt="Lead Researcher - Access Granted" />
+            <img src="367cbd1d-3e95-46ba-b116-e95403944fab.jpg" alt="Threat Intelligence & Anonymous Mask Operations" />
+            <div class="researcher-badge-overlay">Active Intel</div>
           </div>
           <div class="researcher-info">
-            <div class="researcher-tag">Designation</div>
-            <div class="researcher-title">Threat Intel / Anon Mask</div>
+            <div class="researcher-tag">Threat Intelligence</div>
+            <h3 class="researcher-title">Anonymous Operations & Mask Protocol</h3>
+            <p class="researcher-desc">Conducting covert threat analysis and simulating advanced adversarial tactics to uncover systemic infrastructure weaknesses before malicious actors strike.</p>
           </div>
         </div>
 
+        <!-- Researcher Card 2: Terminal Analysis -->
         <div class="researcher-card">
           <div class="researcher-img-wrapper">
-            <img src="a262b845-91aa-4615-8ccf-850cba8e6787.jpg" alt="Lead Researcher - Terminal Session" />
+            <img src="a262b845-91aa-4615-8ccf-850cba8e6787.jpg" alt="Active Terminal Analysis" />
+            <div class="researcher-badge-overlay">Live Session</div>
           </div>
           <div class="researcher-info">
-            <div class="researcher-tag">Operation</div>
-            <div class="researcher-title">Active Terminal Analysis</div>
+            <div class="researcher-tag">Vulnerability Research</div>
+            <h3 class="researcher-title">Active Terminal Code Analysis</h3>
+            <p class="researcher-desc">Performing deep-dive source code reviews, database audits, and zero-day patch verifications to secure enterprise web applications against injection flaws.</p>
           </div>
         </div>
 
+        <!-- Researcher Card 3: Node Operations -->
         <div class="researcher-card">
           <div class="researcher-img-wrapper">
-            <img src="abd61d5f-4403-468e-a3b1-5bed3270c43b.jpg" alt="Lead Researcher - Node Operations" />
+            <img src="abd61d5f-4403-468e-a3b1-5bed3270c43b.jpg" alt="Node Telemetry Oversight" />
+            <div class="researcher-badge-overlay">Secured Node</div>
           </div>
           <div class="researcher-info">
-            <div class="researcher-tag">Infrastructure</div>
-            <div class="researcher-title">Node Telemetry Oversight</div>
+            <div class="researcher-tag">Infrastructure Defense</div>
+            <h3 class="researcher-title">Node Telemetry & Perimeter Defense</h3>
+            <p class="researcher-desc">Monitoring real-time traffic vectors and configuring high-security gateway controls to mitigate unauthorized network intrusions and distributed attacks.</p>
           </div>
         </div>
       </div>

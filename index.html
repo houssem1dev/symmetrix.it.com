@@ -8,7 +8,7 @@
 
   <!-- Security Headers -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https: data:; script-src 'self' 'unsafe-inline' https://api.rss2json.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.rss2json.com https://formsubmit.co;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https: data:; script-src 'self' 'unsafe-inline' https://api.rss2json.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.rss2json.com https://formsubmit.co https://*.supabase.co;" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
 
   <!-- Fonts & Leaflet CSS -->
@@ -518,6 +518,83 @@
       font-family: var(--font-mono);
     }
 
+    /* COURSES & ACADEMY STYLES */
+    .courses-section {
+      margin: 5rem 0;
+    }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+      text-align: left;
+    }
+    body[dir="rtl"] .courses-grid { text-align: right; }
+
+    .course-card {
+      background: linear-gradient(145deg, #0a0e17 0%, #060911 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .course-card:hover {
+      border-color: var(--accent-green);
+      transform: translateY(-6px);
+      box-shadow: 0 15px 40px rgba(0, 255, 102, 0.12);
+    }
+
+    .course-video-wrapper {
+      width: 100%;
+      height: 200px;
+      background: #020406;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .course-video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .course-info {
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
+
+    .course-price-tag {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      margin-bottom: 0.75rem;
+    }
+
+    .course-title {
+      font-size: 1.15rem;
+      color: #fff;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .course-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 1.5rem;
+    }
+
     /* RESEARCHER GALLERY STYLES */
     .researcher-section {
       margin: 5rem 0;
@@ -699,6 +776,182 @@
       font-size: 0.85rem; color: var(--text-muted);
       margin-top: 5rem; background: var(--card-bg);
     }
+
+    /* ACCESSIBILITY: visible keyboard focus everywhere */
+    a:focus-visible, button:focus-visible, input:focus-visible,
+    select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--accent-green);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .live-indicator, .course-card, .researcher-card, .news-card { animation: none !important; transition: none !important; }
+    }
+
+    /* AUTH UI */
+    .auth-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-main);
+      position: relative;
+    }
+    .auth-chip:hover { border-color: var(--border-bright); }
+    .auth-avatar {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--accent-green);
+      color: #000; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem;
+    }
+    .auth-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      min-width: 190px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+      overflow: hidden;
+      z-index: 200;
+    }
+    body[dir="rtl"] .auth-dropdown { right: auto; left: 0; }
+    .auth-dropdown.open { display: block; }
+    .auth-dropdown-item {
+      padding: 0.7rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .auth-dropdown-item:last-child { border-bottom: none; }
+    .auth-dropdown-item:hover { background: var(--card-hover); color: var(--accent-green); }
+    .auth-dropdown-email { color: var(--text-muted); font-size: 0.72rem; cursor: default; }
+    .auth-dropdown-email:hover { background: none; color: var(--text-muted); }
+
+    .auth-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.25rem;
+    }
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.55rem 0.5rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: transparent;
+      border: none;
+    }
+    .auth-tab.active { background: var(--accent-green); color: #000; font-weight: 700; }
+    .auth-error {
+      display: none;
+      background: rgba(255, 42, 75, 0.1);
+      border: 1px solid rgba(255, 42, 75, 0.4);
+      color: var(--accent-red);
+      font-size: 0.8rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+    .auth-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: -0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* COURSE META BADGES + CURRICULUM */
+    .course-badge-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+      flex-wrap: wrap;
+    }
+    .course-pill {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 20px;
+      border: 1px solid var(--border-bright);
+      color: var(--text-muted);
+    }
+    .course-pill.level { color: var(--accent-orange); border-color: rgba(255, 153, 0, 0.35); background: rgba(255,153,0,0.08); }
+    .course-pill.duration { color: var(--accent-blue); border-color: rgba(0, 191, 255, 0.35); background: rgba(0,191,255,0.08); }
+
+    .curriculum-list {
+      list-style: none;
+      margin: 0 0 1.5rem 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .curriculum-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .curriculum-list li::before {
+      content: '✓';
+      color: var(--accent-green);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .checkout-summary-card {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+      margin-bottom: 1.5rem;
+    }
+    .checkout-summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      padding: 0.3rem 0;
+    }
+    .checkout-summary-row.total {
+      color: #fff;
+      font-weight: 700;
+      border-top: 1px dashed var(--border-color);
+      margin-top: 0.4rem;
+      padding-top: 0.6rem;
+    }
+    .checkout-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 1rem;
+      line-height: 1.5;
+    }
   </style>
 </head>
 <body>
@@ -717,6 +970,20 @@
         <option value="ar">العربية</option>
       </select>
       <div class="status-bar" id="status-text" data-i18n="initSync">Initializing feed sync...</div>
+
+      <!-- AUTH: shown when logged out -->
+      <button class="btn-secondary" id="auth-signin-btn" onclick="openAuthModal('login')" data-i18n="signInBtn">Sign In</button>
+
+      <!-- AUTH: shown when logged in -->
+      <div class="auth-chip" id="auth-chip" style="display:none;" onclick="toggleAuthDropdown()">
+        <span class="auth-avatar" id="auth-avatar">?</span>
+        <span id="auth-chip-label">...</span>
+        <div class="auth-dropdown" id="auth-dropdown">
+          <div class="auth-dropdown-item auth-dropdown-email" id="auth-dropdown-email"></div>
+          <div class="auth-dropdown-item" onclick="handleLogout()" data-i18n="logoutBtn">Log Out</div>
+        </div>
+      </div>
+
       <button class="btn-primary" onclick="openModal('report-modal')">
         <span>⚡</span> <span data-i18n="reportVulnBtn">Report Vulnerability</span>
       </button>
@@ -795,6 +1062,87 @@
     </div>
 
     <div class="news-grid" id="news-container"></div>
+
+    <!-- COURSES & ACADEMY SECTION -->
+    <div class="courses-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title" data-i18n="coursesTitle">Symmetrix Security Academy & Courses</h2>
+          <p class="section-subtitle" data-i18n="coursesSub">Master offensive security, penetration testing, and code auditing with hands-on video modules.</p>
+        </div>
+      </div>
+
+      <div class="courses-grid">
+        <!-- Course Card 1 -->
+        <div class="course-card">
+          <div class="course-video-wrapper">
+            <video controls preload="metadata">
+              <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div class="course-info">
+            <div>
+              <div class="course-badge-row">
+                <span class="course-pill level" data-i18n="course1Level">Intermediate</span>
+                <span class="course-pill duration" data-i18n="course1Duration">3h 40m · 12 lessons</span>
+              </div>
+              <div class="course-price-tag">$49.99</div>
+              <h3 class="course-title" data-i18n="course1Title">Advanced Web Pentesting & XSS Mastery</h3>
+              <p class="course-desc" data-i18n="course1Desc">Learn how to spot deep cross-site scripting vulnerabilities, inspect DOM parameters, and safely validate payloads.</p>
+              <ul class="curriculum-list" id="course1-curriculum"></ul>
+            </div>
+            <button class="btn-primary" style="width:100%; justify-content:center;" onclick="openCheckoutModal('course1')" data-i18n="buyCourseBtn">Buy Course & Enroll</button>
+          </div>
+        </div>
+
+        <!-- Course Card 2 -->
+        <div class="course-card">
+          <div class="course-video-wrapper">
+            <video controls preload="metadata">
+              <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div class="course-info">
+            <div>
+              <div class="course-badge-row">
+                <span class="course-pill level" data-i18n="course2Level">Intermediate</span>
+                <span class="course-pill duration" data-i18n="course2Duration">4h 10m · 15 lessons</span>
+              </div>
+              <div class="course-price-tag">$79.99</div>
+              <h3 class="course-title" data-i18n="course2Title">SQL Injection & Database Auditing</h3>
+              <p class="course-desc" data-i18n="course2Desc">Comprehensive guide to understanding database query logic flaws, union-based injections, and remediation strategies.</p>
+              <ul class="curriculum-list" id="course2-curriculum"></ul>
+            </div>
+            <button class="btn-primary" style="width:100%; justify-content:center;" onclick="openCheckoutModal('course2')" data-i18n="buyCourseBtn">Buy Course & Enroll</button>
+          </div>
+        </div>
+
+        <!-- Course Card 3 -->
+        <div class="course-card">
+          <div class="course-video-wrapper">
+            <video controls preload="metadata">
+              <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4" type="video/mp4">
+              Your browser does not support the video tag.
+            </video>
+          </div>
+          <div class="course-info">
+            <div>
+              <div class="course-badge-row">
+                <span class="course-pill level" data-i18n="course3Level">Beginner</span>
+                <span class="course-pill duration" data-i18n="course3Duration">2h 55m · 9 lessons</span>
+              </div>
+              <div class="course-price-tag">$59.99</div>
+              <h3 class="course-title" data-i18n="course3Title">Infrastructure Defense & Perimeter Hardening</h3>
+              <p class="course-desc" data-i18n="course3Desc">Configure secure gateway controls, analyze node telemetry vectors, and protect enterprise server endpoints effectively.</p>
+              <ul class="curriculum-list" id="course3-curriculum"></ul>
+            </div>
+            <button class="btn-primary" style="width:100%; justify-content:center;" onclick="openCheckoutModal('course3')" data-i18n="buyCourseBtn">Buy Course & Enroll</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- LEAD RESEARCHER GALLERY -->
     <div class="researcher-section">
@@ -945,12 +1293,73 @@
     </div>
   </div>
 
+  <!-- AUTH MODAL: SIGN IN / SIGN UP (Supabase Auth) -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('auth-modal')">&times;</button>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="auth-tab-login" onclick="setAuthTab('login')" data-i18n="authTabLogin">Log In</button>
+        <button type="button" class="auth-tab" id="auth-tab-signup" onclick="setAuthTab('signup')" data-i18n="authTabSignup">Create Account</button>
+      </div>
+
+      <p id="auth-context-hint" class="auth-hint" style="display:none;" data-i18n="authRequiredForCourse">Sign in to enroll — course access is tied to your account.</p>
+      <div class="auth-error" id="auth-error"></div>
+
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+        <div class="form-group">
+          <label data-i18n="authEmailLabel">Email</label>
+          <input type="email" id="auth-email" placeholder="you@domain.com" required />
+        </div>
+        <div class="form-group">
+          <label data-i18n="authPasswordLabel">Password</label>
+          <input type="password" id="auth-password" placeholder="••••••••" minlength="6" required />
+        </div>
+        <button type="submit" class="btn-primary" id="auth-submit-btn" style="width:100%; justify-content:center; padding:0.75rem;" data-i18n="authSubmitLogin">Log In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- CHECKOUT MODAL: hands off to Stripe, never touches card data -->
+  <div class="modal-overlay" id="checkout-modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('checkout-modal')">&times;</button>
+      <h3 style="color:#fff; margin-bottom:0.4rem; font-size:1.2rem;" data-i18n="modalCheckoutTitle">Secure Course Checkout</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;" data-i18n="modalCheckoutSub">You'll complete payment on Stripe's secure page — Symmetrix never sees or stores your card details.</p>
+
+      <div class="checkout-summary-card">
+        <div class="checkout-summary-row">
+          <span data-i18n="checkoutCourseLabel">Course</span>
+          <span id="checkout-course-name">—</span>
+        </div>
+        <div class="checkout-summary-row">
+          <span data-i18n="checkoutAccountLabel">Enrolling as</span>
+          <span id="checkout-account-email">—</span>
+        </div>
+        <div class="checkout-summary-row total">
+          <span data-i18n="checkoutTotalLabel">Total</span>
+          <span id="checkout-course-price">—</span>
+        </div>
+      </div>
+
+      <button class="btn-primary" id="checkout-continue-btn" style="width:100%; justify-content:center; padding:0.75rem;" onclick="goToStripeCheckout()" data-i18n="checkoutContinueBtn">Continue to Stripe Checkout →</button>
+
+      <p class="checkout-note">
+        <span>🔒</span>
+        <span data-i18n="checkoutNote">Payment is processed entirely by Stripe. This site only records that your Stripe payment succeeded — it never handles raw card numbers.</span>
+      </p>
+    </div>
+  </div>
+
   <footer>
     <p data-i18n="footerText">&copy; 2026 Symmetrix Security Research. Defensive cybersecurity initiative.</p>
   </footer>
 
   <!-- LEAFLET SCRIPT -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <!-- SUPABASE AUTH SCRIPT (email/password sign in — no custom backend needed) -->
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 
   <script>
     /* MULTI-LANGUAGE DICTIONARY */
@@ -975,6 +1384,16 @@
         advisoriesSub: "Real-time alerts aggregated across primary cybersecurity advisories.",
         searchPlaceholder: "Search advisories (e.g., CVE, Zero-day)...",
         refreshBtn: "Refresh Feeds",
+        coursesTitle: "Symmetrix Security Academy & Courses",
+        coursesSub: "Master offensive security, penetration testing, and code auditing with hands-on video modules.",
+        buyCourseBtn: "Buy Course & Enroll",
+        modalCheckoutTitle: "Secure Course Checkout",
+        course1Title: "Advanced Web Pentesting & XSS Mastery",
+        course1Desc: "Learn how to spot deep cross-site scripting vulnerabilities, inspect DOM parameters, and safely validate payloads.",
+        course2Title: "SQL Injection & Database Auditing",
+        course2Desc: "Comprehensive guide to understanding database query logic flaws, union-based injections, and remediation strategies.",
+        course3Title: "Infrastructure Defense & Perimeter Hardening",
+        course3Desc: "Configure secure gateway controls, analyze node telemetry vectors, and protect enterprise server endpoints effectively.",
         researcherTitle: "Lead Security Researcher",
         researcherSub: "Operational profiles and threat intelligence field captures.",
         badge1: "Active Intel",
@@ -1019,7 +1438,53 @@
         formScope: "Audit Scope & Message",
         scopePlaceholder: "Provide target domains...",
         sendAuditBtn: "Submit Audit Request",
-        footerText: "&copy; 2026 Symmetrix Security Research. Defensive cybersecurity initiative."
+        footerText: "&copy; 2026 Symmetrix Security Research. Defensive cybersecurity initiative.",
+
+        signInBtn: "Sign In",
+        logoutBtn: "Log Out",
+        authTabLogin: "Log In",
+        authTabSignup: "Create Account",
+        authRequiredForCourse: "Sign in to enroll — course access is tied to your account.",
+        authEmailLabel: "Email",
+        authPasswordLabel: "Password",
+        authSubmitLogin: "Log In",
+        authSubmitSignup: "Create Account",
+        authErrGeneric: "Something went wrong. Please try again.",
+        authErrInvalid: "Incorrect email or password.",
+        authErrWeakPassword: "Password must be at least 6 characters.",
+        authSignupSuccess: "Account created! Check your email to confirm, then log in.",
+
+        modalCheckoutSub: "You'll complete payment on Stripe's secure page — Symmetrix never sees or stores your card details.",
+        checkoutCourseLabel: "Course",
+        checkoutAccountLabel: "Enrolling as",
+        checkoutTotalLabel: "Total",
+        checkoutContinueBtn: "Continue to Stripe Checkout →",
+        checkoutNote: "Payment is processed entirely by Stripe. This site only records that your Stripe payment succeeded — it never handles raw card numbers.",
+
+        course1Level: "Intermediate",
+        course1Duration: "3h 40m · 12 lessons",
+        course1Curriculum: [
+          "Mapping DOM, reflected, and stored XSS surfaces",
+          "Safely validating payloads in an isolated sandbox",
+          "Reading and hardening Content-Security-Policy headers",
+          "Writing a disclosure-ready proof of concept"
+        ],
+        course2Level: "Intermediate",
+        course2Duration: "4h 10m · 15 lessons",
+        course2Curriculum: [
+          "Recognizing query logic flaws before they ship",
+          "Union-based and blind injection detection methods",
+          "Parameterized queries and ORM-safe patterns",
+          "Auditing a schema for least-privilege access"
+        ],
+        course3Level: "Beginner",
+        course3Duration: "2h 55m · 9 lessons",
+        course3Curriculum: [
+          "Configuring gateway and WAF baseline rules",
+          "Reading node telemetry for early intrusion signs",
+          "Locking down exposed ports and default services",
+          "Building an incident response runbook"
+        ]
       },
       fr: {
         pageTitle: "Symmetrix | Recherche White-Hat & Threat Intel",
@@ -1041,6 +1506,16 @@
         advisoriesSub: "Alertes en temps réel agrégées à partir des principaux flux de cybersécurité.",
         searchPlaceholder: "Rechercher des avis (ex: CVE, Zero-day)...",
         refreshBtn: "Actualiser",
+        coursesTitle: "Académie de Sécurité Symmetrix & Cours",
+        coursesSub: "Maîtrisez la sécurité offensive, les tests d'intrusion et l'audit de code avec des modules vidéo pratiques.",
+        buyCourseBtn: "Acheter le cours & s'inscrire",
+        modalCheckoutTitle: "Paiement Sécurisé du Cours",
+        course1Title: "Pentesting Web Avancé & Maîtrise XSS",
+        course1Desc: "Apprenez à repérer les failles XSS approfondies, à inspecter les paramètres DOM et à valider les charges utiles en toute sécurité.",
+        course2Title: "Injection SQL & Audit de Bases de Données",
+        course2Desc: "Guide complet pour comprendre les failles de logique de requête, les injections basées sur union et les stratégies de remédiation.",
+        course3Title: "Défense d'Infrastructure & Durcissement",
+        course3Desc: "Configurez des contrôles de passerelle sécurisés, analysez les vecteurs de télémétrie et protégez efficacement les serveurs.",
         researcherTitle: "Chercheur en Sécurité Principal",
         researcherSub: "Profils opérationnels et captures de cyber-intelligence.",
         badge1: "Intel Actif",
@@ -1085,7 +1560,53 @@
         formScope: "Portée de l'Audit & Message",
         scopePlaceholder: "Fournir les domaines cibles...",
         sendAuditBtn: "Soumettre la Demande",
-        footerText: "&copy; 2026 Symmetrix Security Research. Initiative de cybersécurité défensive."
+        footerText: "&copy; 2026 Symmetrix Security Research. Initiative de cybersécurité défensive.",
+
+        signInBtn: "Connexion",
+        logoutBtn: "Déconnexion",
+        authTabLogin: "Connexion",
+        authTabSignup: "Créer un compte",
+        authRequiredForCourse: "Connectez-vous pour vous inscrire — l'accès au cours est lié à votre compte.",
+        authEmailLabel: "E-mail",
+        authPasswordLabel: "Mot de passe",
+        authSubmitLogin: "Connexion",
+        authSubmitSignup: "Créer un compte",
+        authErrGeneric: "Une erreur est survenue. Veuillez réessayer.",
+        authErrInvalid: "E-mail ou mot de passe incorrect.",
+        authErrWeakPassword: "Le mot de passe doit contenir au moins 6 caractères.",
+        authSignupSuccess: "Compte créé ! Vérifiez votre e-mail pour confirmer, puis connectez-vous.",
+
+        modalCheckoutSub: "Vous terminerez le paiement sur la page sécurisée de Stripe — Symmetrix ne voit ni ne stocke jamais vos données bancaires.",
+        checkoutCourseLabel: "Cours",
+        checkoutAccountLabel: "Inscription en tant que",
+        checkoutTotalLabel: "Total",
+        checkoutContinueBtn: "Continuer vers Stripe →",
+        checkoutNote: "Le paiement est entièrement traité par Stripe. Ce site enregistre seulement la réussite du paiement — il ne gère jamais les numéros de carte.",
+
+        course1Level: "Intermédiaire",
+        course1Duration: "3h40 · 12 leçons",
+        course1Curriculum: [
+          "Cartographier les surfaces XSS DOM, réfléchies et stockées",
+          "Valider les charges utiles en toute sécurité dans un bac à sable isolé",
+          "Lire et renforcer les en-têtes Content-Security-Policy",
+          "Rédiger une preuve de concept prête pour la divulgation"
+        ],
+        course2Level: "Intermédiaire",
+        course2Duration: "4h10 · 15 leçons",
+        course2Curriculum: [
+          "Repérer les failles de logique de requête avant leur mise en production",
+          "Méthodes de détection d'injection union et aveugle",
+          "Requêtes paramétrées et modèles sûrs avec ORM",
+          "Auditer un schéma pour un accès à moindre privilège"
+        ],
+        course3Level: "Débutant",
+        course3Duration: "2h55 · 9 leçons",
+        course3Curriculum: [
+          "Configurer les règles de base de la passerelle et du WAF",
+          "Lire la télémétrie des nœuds pour détecter les intrusions",
+          "Verrouiller les ports exposés et les services par défaut",
+          "Construire un plan de réponse aux incidents"
+        ]
       },
       ar: {
         pageTitle: "سيمتريكس | أبحاث القبعات البيضاء واستخبارات التهديدات",
@@ -1107,6 +1628,16 @@
         advisoriesSub: "تنبيهات في الوقت الفعلي مجدولة عبر مصادر الأمن السيبراني الرئيسية.",
         searchPlaceholder: "البحث في الإشعارات (مثال: CVE، ثغرة صفرية)...",
         refreshBtn: "تحديث الخلاصات",
+        coursesTitle: "أكاديمية سيمتريكس الأمنية والدورات التدريبية",
+        coursesSub: "أتقن الأمن الهجومي، اختبار الاختراق، وتدقيق الأكواد من خلال وحدات فيديو تفاعلية.",
+        buyCourseBtn: "شراء الدورة والانضمام",
+        modalCheckoutTitle: "الدفع الآمن للدورة التدريبية",
+        course1Title: "اختبار اختراق الويب المتقدم وإتقان XSS",
+        course1Desc: "تعرف على كيفية رصد ثغرات البرمجة النصية عبر المواقع، وفحص بارامترات DOM، والتحقق من حمولات الهجوم بأمان.",
+        course2Title: "حقن قواعد البيانات SQL وتدقيقها",
+        course2Desc: "دليل شامل لفهم عيوب منطق استعلامات قواعد البيانات، وعمليات الحقن باستخدام union، واستراتيجيات العلاج.",
+        course3Title: "دفاع البنية التحتية وتصلب المحيط الرقمي",
+        course3Desc: "تكوين ضوابط البوابة الآمنة، تحليل متجهات قياس العقد، وحماية نقاط نهاية خوادم الشركات بفعالية.",
         researcherTitle: "كبير الباحثين الأمنيين",
         researcherSub: "الملفات التشغيلية ولقطات استخبارات التهديدات.",
         badge1: "معلومات نشطة",
@@ -1151,7 +1682,53 @@
         formScope: "نطاق التدقيق والرسالة",
         scopePlaceholder: "أدخل النطاقات المستهدفة...",
         sendAuditBtn: "تقديم طلب التدقيق",
-        footerText: "&copy; 2026 سيمتريكس للأبحاث الأمنية. مبادرة الدفاع السيبراني."
+        footerText: "&copy; 2026 سيمتريكس للأبحاث الأمنية. مبادرة الدفاع السيبراني.",
+
+        signInBtn: "تسجيل الدخول",
+        logoutBtn: "تسجيل الخروج",
+        authTabLogin: "تسجيل الدخول",
+        authTabSignup: "إنشاء حساب",
+        authRequiredForCourse: "سجّل الدخول للتسجيل في الدورة — الوصول للدورة مرتبط بحسابك.",
+        authEmailLabel: "البريد الإلكتروني",
+        authPasswordLabel: "كلمة المرور",
+        authSubmitLogin: "تسجيل الدخول",
+        authSubmitSignup: "إنشاء حساب",
+        authErrGeneric: "حدث خطأ ما. الرجاء المحاولة مرة أخرى.",
+        authErrInvalid: "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+        authErrWeakPassword: "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.",
+        authSignupSuccess: "تم إنشاء الحساب! تحقق من بريدك الإلكتروني للتأكيد ثم سجّل الدخول.",
+
+        modalCheckoutSub: "ستكمل الدفع على صفحة Stripe الآمنة — سيمتريكس لا ترى أو تخزن بيانات بطاقتك أبداً.",
+        checkoutCourseLabel: "الدورة",
+        checkoutAccountLabel: "التسجيل باسم",
+        checkoutTotalLabel: "الإجمالي",
+        checkoutContinueBtn: "المتابعة إلى الدفع عبر Stripe ←",
+        checkoutNote: "تتم معالجة الدفع بالكامل عبر Stripe. يسجل هذا الموقع فقط نجاح عملية الدفع — ولا يتعامل أبداً مع أرقام البطاقات الفعلية.",
+
+        course1Level: "متوسط",
+        course1Duration: "3س 40د · 12 درساً",
+        course1Curriculum: [
+          "تحديد ثغرات XSS من نوع DOM والمنعكسة والمخزنة",
+          "التحقق الآمن من الحمولات داخل بيئة معزولة",
+          "قراءة وتقوية رؤوس Content-Security-Policy",
+          "كتابة إثبات مفهوم جاهز للإفصاح المسؤول"
+        ],
+        course2Level: "متوسط",
+        course2Duration: "4س 10د · 15 درساً",
+        course2Curriculum: [
+          "اكتشاف عيوب منطق الاستعلامات قبل الإطلاق",
+          "أساليب اكتشاف الحقن من نوع union والأعمى",
+          "الاستعلامات المُعامَلة وأنماط ORM الآمنة",
+          "تدقيق مخطط قاعدة البيانات لأقل الصلاحيات الممكنة"
+        ],
+        course3Level: "مبتدئ",
+        course3Duration: "2س 55د · 9 دروس",
+        course3Curriculum: [
+          "تكوين قواعد البوابة وجدار حماية الويب الأساسية",
+          "قراءة قياس العقد لرصد الاختراقات المبكرة",
+          "إغلاق المنافذ المكشوفة والخدمات الافتراضية",
+          "بناء خطة استجابة للحوادث الأمنية"
+        ]
       }
     };
 
@@ -1159,7 +1736,6 @@
       const t = translations[lang];
       if (!t) return;
 
-      // Update direction for Arabic
       const root = document.getElementById("html-root");
       if (lang === 'ar') {
         root.setAttribute("dir", "rtl");
@@ -1167,10 +1743,8 @@
         root.setAttribute("dir", "ltr");
       }
 
-      // Update page title
       document.getElementById("page-title").textContent = t.pageTitle;
 
-      // Update all elements with data-i18n attribute
       document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.getAttribute("data-i18n");
         if (t[key]) {
@@ -1178,7 +1752,6 @@
         }
       });
 
-      // Update placeholders
       document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
         const key = el.getAttribute("data-i18n-placeholder");
         if (t[key]) {
@@ -1186,11 +1759,17 @@
         }
       });
 
-      // Save preference
+      ["course1", "course2", "course3"].forEach(id => {
+        const list = document.getElementById(`${id}-curriculum`);
+        const items = t[`${id}Curriculum`];
+        if (list && items) {
+          list.innerHTML = items.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+        }
+      });
+
       localStorage.setItem("symmetrix_lang", lang);
     }
 
-    // Auto-load saved language on startup
     window.addEventListener("DOMContentLoaded", () => {
       const savedLang = localStorage.getItem("symmetrix_lang") || "en";
       document.getElementById("lang-switcher").value = savedLang;
@@ -1463,8 +2042,208 @@
       }
     }
 
+    /* ======================================================================
+       CONFIG — fill these in with your own project's real credentials.
+       Nothing here is a placeholder for card data: Supabase issues the
+       account/session, Stripe Payment Links own the entire card-entry flow.
+       ====================================================================== */
+    const APP_CONFIG = {
+      // Create a free project at https://supabase.com, then Settings → API
+      SUPABASE_URL: "https://fkyjwfnbxpevczecyfrz.supabase.co",
+      SUPABASE_ANON_KEY: "sb_publishable_wyV4KPICojkSTBgCdOZu0A_AFqRO09K",
+
+      // Create a Payment Link per course at https://dashboard.stripe.com/payment-links
+      // (Stripe hosts the card form — this code never sees a card number.)
+      STRIPE_PAYMENT_LINKS: {
+        course1: "https://buy.stripe.com/REPLACE_WITH_COURSE1_LINK",
+        course2: "https://buy.stripe.com/REPLACE_WITH_COURSE2_LINK",
+        course3: "https://buy.stripe.com/REPLACE_WITH_COURSE3_LINK"
+      }
+    };
+
+    const COURSE_LOOKUP = {
+      course1: { titleKey: "course1Title", price: "$49.99" },
+      course2: { titleKey: "course2Title", price: "$79.99" },
+      course3: { titleKey: "course3Title", price: "$59.99" }
+    };
+
+    const supabaseClient = (APP_CONFIG.SUPABASE_URL.includes("YOUR-PROJECT"))
+      ? null
+      : window.supabase.createClient(APP_CONFIG.SUPABASE_URL, APP_CONFIG.SUPABASE_ANON_KEY);
+
+    let currentUser = null;
+    let pendingCourseId = null; // course the visitor was trying to buy when asked to sign in
+
+    /* ---------- AUTH UI STATE ---------- */
+
+    function refreshAuthUI() {
+      const signInBtn = document.getElementById("auth-signin-btn");
+      const chip = document.getElementById("auth-chip");
+      const avatar = document.getElementById("auth-avatar");
+      const label = document.getElementById("auth-chip-label");
+      const emailRow = document.getElementById("auth-dropdown-email");
+
+      if (currentUser) {
+        signInBtn.style.display = "none";
+        chip.style.display = "flex";
+        const email = currentUser.email || "";
+        avatar.textContent = email.charAt(0).toUpperCase() || "?";
+        label.textContent = email.split("@")[0];
+        emailRow.textContent = email;
+      } else {
+        signInBtn.style.display = "inline-flex";
+        chip.style.display = "none";
+        document.getElementById("auth-dropdown").classList.remove("open");
+      }
+    }
+
+    function toggleAuthDropdown() {
+      document.getElementById("auth-dropdown").classList.toggle("open");
+    }
+
+    document.addEventListener("click", (e) => {
+      const chip = document.getElementById("auth-chip");
+      if (chip && !chip.contains(e.target)) {
+        document.getElementById("auth-dropdown").classList.remove("open");
+      }
+    });
+
+    async function initAuth() {
+      if (!supabaseClient) {
+        console.warn("Supabase not configured yet — fill in APP_CONFIG.SUPABASE_URL / SUPABASE_ANON_KEY.");
+        return;
+      }
+      const { data } = await supabaseClient.auth.getSession();
+      currentUser = data?.session?.user || null;
+      refreshAuthUI();
+
+      supabaseClient.auth.onAuthStateChange((_event, session) => {
+        currentUser = session?.user || null;
+        refreshAuthUI();
+      });
+    }
+
+    /* ---------- AUTH MODAL (login / signup tabs) ---------- */
+
+    let authMode = "login"; // 'login' | 'signup'
+
+    function openAuthModal(mode, courseIdIfPending) {
+      pendingCourseId = courseIdIfPending || null;
+      setAuthTab(mode);
+      document.getElementById("auth-context-hint").style.display = pendingCourseId ? "block" : "none";
+      document.getElementById("auth-error").style.display = "none";
+      openModal("auth-modal");
+    }
+
+    function setAuthTab(mode) {
+      authMode = mode;
+      const t = translations[document.getElementById("lang-switcher").value];
+      document.getElementById("auth-tab-login").classList.toggle("active", mode === "login");
+      document.getElementById("auth-tab-signup").classList.toggle("active", mode === "signup");
+      document.getElementById("auth-submit-btn").textContent = mode === "login" ? t.authSubmitLogin : t.authSubmitSignup;
+      document.getElementById("auth-error").style.display = "none";
+    }
+
+    function showAuthError(message) {
+      const box = document.getElementById("auth-error");
+      box.textContent = message;
+      box.style.display = "block";
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      const t = translations[document.getElementById("lang-switcher").value];
+      const email = document.getElementById("auth-email").value.trim();
+      const password = document.getElementById("auth-password").value;
+
+      if (!supabaseClient) {
+        showAuthError("Auth isn't configured yet — add your Supabase URL and anon key in APP_CONFIG.");
+        return;
+      }
+
+      const submitBtn = document.getElementById("auth-submit-btn");
+      submitBtn.disabled = true;
+
+      try {
+        if (authMode === "login") {
+          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) throw error;
+          currentUser = data.user;
+          refreshAuthUI();
+          closeModal("auth-modal");
+          document.getElementById("auth-form").reset();
+          if (pendingCourseId) {
+            const idToOpen = pendingCourseId;
+            pendingCourseId = null;
+            openCheckoutModal(idToOpen);
+          }
+        } else {
+          const { data, error } = await supabaseClient.auth.signUp({ email, password });
+          if (error) throw error;
+          if (data.user && !data.session) {
+            alert(t.authSignupSuccess);
+            setAuthTab("login");
+          } else {
+            currentUser = data.user;
+            refreshAuthUI();
+            closeModal("auth-modal");
+            document.getElementById("auth-form").reset();
+          }
+        }
+      } catch (err) {
+        const msg = (err && err.message) || "";
+        if (msg.toLowerCase().includes("invalid login")) showAuthError(t.authErrInvalid);
+        else if (msg.toLowerCase().includes("password")) showAuthError(t.authErrWeakPassword);
+        else showAuthError(msg || t.authErrGeneric);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    }
+
+    async function handleLogout() {
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      currentUser = null;
+      refreshAuthUI();
+    }
+
+    /* ---------- CHECKOUT: hands off to Stripe, never touches card data ---------- */
+
+    let activeCheckoutCourseId = null;
+
+    function openCheckoutModal(courseId) {
+      // Require sign-in first so the purchase can be tied to an account.
+      if (!currentUser) {
+        openAuthModal("login", courseId);
+        return;
+      }
+
+      const course = COURSE_LOOKUP[courseId];
+      if (!course) return;
+      activeCheckoutCourseId = courseId;
+
+      const t = translations[document.getElementById("lang-switcher").value];
+      document.getElementById("checkout-course-name").textContent = t[course.titleKey];
+      document.getElementById("checkout-course-price").textContent = course.price;
+      document.getElementById("checkout-account-email").textContent = currentUser.email;
+      openModal("checkout-modal");
+    }
+
+    function goToStripeCheckout() {
+      const link = APP_CONFIG.STRIPE_PAYMENT_LINKS[activeCheckoutCourseId];
+      if (!link || link.includes("REPLACE_WITH")) {
+        alert("Add a real Stripe Payment Link for this course in APP_CONFIG.STRIPE_PAYMENT_LINKS.");
+        return;
+      }
+      const email = currentUser ? encodeURIComponent(currentUser.email) : "";
+      const url = email ? `${link}?prefilled_email=${email}` : link;
+      window.open(url, "_blank", "noopener,noreferrer");
+      closeModal("checkout-modal");
+    }
+
     function openModal(modalId) { document.getElementById(modalId).style.display = "flex"; }
     function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; }
+
+    initAuth();
 
     window.onclick = function(event) {
       if (event.target.classList.contains('modal-overlay')) {

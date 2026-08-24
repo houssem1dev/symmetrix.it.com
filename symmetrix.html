@@ -2650,9 +2650,9 @@
         const data = await response.json().catch(() => ({}));
         pending.textContent = response.ok && data.answer
           ? data.answer
-          : 'Generative AI is not connected. Start the Vercel runtime and configure OPENAI_API_KEY to enable live answers.';
+          : 'Generative AI is not configured on this deployment. Add OPENAI_API_KEY in Vercel project settings to enable live answers.';
       } catch (error) {
-        pending.textContent = 'Generative AI is unavailable from this server. Run npm run vercel-dev with OPENAI_API_KEY configured to enable live answers.';
+        pending.textContent = 'Generative AI is temporarily unavailable. Check the Vercel deployment and OPENAI_API_KEY configuration.';
       }
       assistantHistory.push({ role: 'assistant', content: pending.textContent });
       updateAssistantPrompts(pending.textContent);

@@ -1,0 +1,2680 @@
+<!DOCTYPE html>
+<html lang="en" id="html-root">
+<head>
+<script defer src="/_vercel/insights/script.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="page-title">Symmetrix | White-Hat Research & Threat Intel</title>
+
+  <!-- Security Headers & Stripe JS -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https: data:; script-src 'self' 'unsafe-inline' https://api.rss2json.com https://unpkg.com https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://api.rss2json.com https://formsubmit.co https://*.supabase.co https://api.stripe.com; frame-src https://js.stripe.com https://hooks.stripe.com;" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+
+  <!-- Stripe JS -->
+  <script src="https://js.stripe.com/v3/"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <!-- Fonts & Leaflet CSS -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&family=Fira+Code:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    :root {
+      --bg-color: #040609;
+      --card-bg: #0a0e17;
+      --card-hover: #101624;
+      --border-color: #172033;
+      --border-bright: #263552;
+      --text-main: #e2e8f0;
+      --text-muted: #8092b0;
+      
+      --accent-green: #00ff66;
+      --accent-green-glow: rgba(0, 255, 102, 0.25);
+      --accent-red: #ff2a4b;
+      --accent-orange: #ff9900;
+      --accent-blue: #00bfff;
+      --font-display: 'Space Grotesk', sans-serif;
+      --font-mono: 'Fira Code', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-display);
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px),
+        radial-gradient(circle at 50% 0%, rgba(0, 255, 102, 0.04) 0%, transparent 60%),
+        radial-gradient(circle at 85% 60%, rgba(0, 191, 255, 0.03) 0%, transparent 40%);
+      background-size: 32px 32px, 32px 32px, auto, auto;
+    }
+
+    body[dir="rtl"] { font-family: 'Cairo', sans-serif; }
+
+    header {
+      border-bottom: 1px solid var(--border-color);
+      padding: 0.85rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: rgba(4, 6, 9, 0.9);
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(16px);
+      z-index: 100;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: #fff;
+      letter-spacing: -0.02em;
+    }
+
+    .brand-shield { color: var(--accent-green); font-size: 1.4rem; }
+
+    .live-indicator {
+      width: 8px;
+      height: 8px;
+      background-color: var(--accent-green);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(0.85); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    .nav-actions { display: flex; align-items: center; gap: 1rem; }
+    .status-bar { font-size: 0.8rem; color: var(--text-muted); font-family: var(--font-mono); display: none; }
+    @media(min-width: 768px) { .status-bar { display: block; } }
+
+    .lang-select {
+      background: var(--card-bg);
+      color: var(--accent-green);
+      border: 1px solid var(--border-bright);
+      padding: 0.4rem 0.6rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.8rem;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+    .lang-select:hover { border-color: var(--accent-green); }
+
+    .btn-primary {
+      background: rgba(0, 255, 102, 0.1);
+      color: var(--accent-green);
+      border: 1px solid var(--accent-green);
+      padding: 0.55rem 1.1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .btn-primary:hover {
+      background: var(--accent-green);
+      color: #000;
+      box-shadow: 0 0 20px var(--accent-green-glow);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: var(--card-bg);
+      color: #fff;
+      border: 1px solid var(--border-color);
+      padding: 0.55rem 1.1rem;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      font-family: var(--font-mono);
+    }
+
+    .btn-secondary:hover { background: var(--card-hover); border-color: var(--border-bright); }
+
+    .hero {
+      border-bottom: 1px solid var(--border-color);
+      padding: 3rem 1.5rem 2rem 1.5rem;
+      position: relative;
+      text-align: center;
+      background: linear-gradient(180deg, rgba(15, 20, 28, 0.4) 0%, rgba(8, 11, 16, 1) 100%);
+    }
+
+    .hero-content { max-width: 850px; margin: 0 auto; }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      color: var(--accent-green);
+      background: rgba(0, 255, 102, 0.08);
+      border: 1px solid rgba(0, 255, 102, 0.2);
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.25rem);
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 1rem;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+
+    .hero h1 span {
+      color: var(--accent-green);
+      text-shadow: 0 0 25px var(--accent-green-glow);
+    }
+
+    .hero p {
+      font-size: 1.05rem;
+      color: var(--text-muted);
+      margin-bottom: 1.75rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .hero-cta-group { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    .radar-container {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      max-width: 1250px;
+      margin: 2.5rem auto 0 auto;
+      text-align: left;
+    }
+    body[dir="rtl"] .radar-container { text-align: right; }
+
+    @media(min-width: 1024px) {
+      .radar-container { grid-template-columns: 2.3fr 1.1fr; }
+    }
+
+    .map-panel {
+      background: #050a14;
+      border: 1px solid var(--border-bright);
+      border-radius: 12px;
+      padding: 1rem;
+      position: relative;
+      overflow: hidden;
+      min-height: 480px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+
+    .map-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+      z-index: 10;
+    }
+
+    .panel-title-text {
+      font-size: 0.8rem;
+      font-family: var(--font-mono);
+      color: var(--accent-green);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    #leaflet-map {
+      width: 100%;
+      height: 400px;
+      border-radius: 8px;
+      background: #081124;
+      position: relative;
+      z-index: 1;
+      filter: brightness(1.75) contrast(1.5) saturate(1.8) hue-rotate(60deg);
+    }
+
+    .leaflet-container { background: #081124 !important; }
+    .leaflet-control-attribution, .leaflet-control-zoom { display: none !important; }
+
+    #canvas-overlay {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .alert-tag {
+      background: rgba(255, 42, 75, 0.95);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #fff;
+      box-shadow: 0 0 15px rgba(255, 42, 75, 0.9);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .telemetry-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      font-family: var(--font-mono);
+    }
+
+    .stream-box {
+      background: #020406;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.85rem;
+      flex-grow: 1;
+      height: 380px;
+      overflow-y: auto;
+      font-size: 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .stream-box::-webkit-scrollbar { width: 4px; }
+    .stream-box::-webkit-scrollbar-thumb { background: var(--border-color); }
+
+    .stream-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px dashed rgba(255,255,255,0.05);
+    }
+
+    .stream-type { color: var(--accent-red); font-weight: 700; }
+    .stream-target { color: var(--accent-blue); }
+
+    .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.25rem;
+      max-width: 1250px;
+      margin: 2rem auto 0 auto;
+    }
+
+    .metric-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 1.25rem;
+      border-radius: 10px;
+      position: relative;
+      overflow: hidden;
+      text-align: left;
+    }
+    body[dir="rtl"] .metric-card { text-align: right; }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--accent-green);
+    }
+    body[dir="rtl"] .metric-card::before { left: auto; right: 0; }
+
+    .metric-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #fff;
+      font-family: var(--font-mono);
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 0.2rem;
+    }
+
+    main {
+      max-width: 1250px;
+      margin: 3rem auto;
+      padding: 0 1.5rem;
+    }
+
+    .section-header {
+      margin-bottom: 1.75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .section-title {
+      font-size: 1.5rem;
+      color: #fff;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .section-subtitle {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .search-input {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.65rem 1rem;
+      border-radius: 8px;
+      width: 100%;
+      max-width: 340px;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent-green);
+      box-shadow: 0 0 10px var(--accent-green-glow);
+    }
+
+    .refresh-btn {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 0.65rem 1.1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: all 0.2s ease;
+      font-weight: 500;
+    }
+
+    .refresh-btn:hover {
+      background: var(--card-hover);
+      border-color: #4b5563;
+    }
+
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4.5rem;
+      text-align: left;
+    }
+    body[dir="rtl"] .news-grid { text-align: right; }
+
+    .news-card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.35rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .news-card:hover {
+      transform: translateY(-3px);
+      border-color: #374151;
+      background-color: var(--card-hover);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .card-source {
+      font-size: 0.75rem;
+      font-weight: 600;
+      font-family: var(--font-mono);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-blue);
+    }
+
+    .tag {
+      font-size: 0.65rem;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .tag-critical { background: rgba(255, 71, 87, 0.15); color: var(--accent-red); border: 1px solid rgba(255, 71, 87, 0.3); }
+    .tag-high { background: rgba(255, 165, 2, 0.15); color: var(--accent-orange); border: 1px solid rgba(255, 165, 2, 0.3); }
+    .tag-info { background: rgba(56, 189, 248, 0.15); color: var(--accent-blue); border: 1px solid rgba(56, 189, 248, 0.3); }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      line-height: 1.4;
+    }
+
+    .card-title a { color: inherit; text-decoration: none; transition: color 0.2s ease; }
+    .card-title a:hover { color: var(--accent-green); }
+
+    .card-snippet {
+      font-size: 0.875rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      display: -webkit-box;
+      -webkit-line-clamp: 3;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      padding-top: 0.85rem;
+      font-family: var(--font-mono);
+    }
+
+    /* COURSES & ACADEMY STYLES */
+    .courses-section { margin: 5rem 0; }
+
+    .courses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+      text-align: left;
+    }
+    body[dir="rtl"] .courses-grid { text-align: right; }
+
+    .course-card {
+      background: linear-gradient(145deg, #0a0e17 0%, #060911 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .course-card:hover {
+      border-color: var(--accent-green);
+      transform: translateY(-6px);
+      box-shadow: 0 15px 40px rgba(0, 255, 102, 0.12);
+    }
+
+    .course-video-wrapper {
+      width: 100%;
+      height: 200px;
+      background: #020406;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .course-video-wrapper video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .course-info {
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: space-between;
+    }
+
+    .course-price-tag {
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--accent-green);
+      margin-bottom: 0.75rem;
+    }
+
+    .course-title {
+      font-size: 1.15rem;
+      color: #fff;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+    }
+
+    .course-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.55;
+      margin-bottom: 1.5rem;
+    }
+
+    /* RESEARCHER GALLERY STYLES */
+    .researcher-section { margin: 5rem 0; }
+
+    .researcher-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+      text-align: left;
+    }
+    body[dir="rtl"] .researcher-grid { text-align: right; }
+
+    .researcher-card {
+      background: linear-gradient(145deg, #0a0e17 0%, #060911 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .researcher-card:hover {
+      border-color: var(--accent-green);
+      transform: translateY(-6px);
+      box-shadow: 0 15px 40px rgba(0, 255, 102, 0.12);
+    }
+
+    .researcher-img-wrapper {
+      width: 100%;
+      height: 320px;
+      overflow: hidden;
+      position: relative;
+      background: #020406;
+    }
+
+    .researcher-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center top;
+      transition: transform 0.5s ease;
+      filter: contrast(1.05) saturate(1.1);
+    }
+
+    .researcher-card:hover .researcher-img-wrapper img { transform: scale(1.06); }
+
+    .researcher-badge-overlay {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      background: rgba(4, 6, 9, 0.85);
+      border: 1px solid rgba(0, 255, 102, 0.4);
+      color: var(--accent-green);
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 20px;
+      backdrop-filter: blur(6px);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    body[dir="rtl"] .researcher-badge-overlay { right: auto; left: 1rem; }
+
+    .researcher-info { padding: 1.75rem; font-family: var(--font-mono); }
+    .researcher-tag { font-size: 0.7rem; color: var(--accent-green); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; font-weight: 700; }
+    .researcher-title { font-size: 1.15rem; color: #fff; font-weight: 700; margin-bottom: 0.75rem; font-family: 'Inter', sans-serif; letter-spacing: -0.01em; }
+    .researcher-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.55; font-family: 'Inter', sans-serif; }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-top: 1.5rem;
+      text-align: left;
+    }
+    body[dir="rtl"] .services-grid { text-align: right; }
+
+    .service-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 1.5rem;
+      transition: border-color 0.2s ease;
+    }
+
+    .service-card:hover { border-color: rgba(0, 255, 102, 0.4); }
+    .service-icon { font-size: 1.5rem; margin-bottom: 0.75rem; color: var(--accent-green); }
+    .service-card h3 { color: #fff; font-size: 1.1rem; margin-bottom: 0.5rem; }
+    .service-card p { font-size: 0.875rem; color: var(--text-muted); }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--card-bg) 25%, #1a2332 50%, var(--card-bg) 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+      border-radius: 10px;
+    }
+    @keyframes loading {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .skeleton-card { height: 230px; border: 1px solid var(--border-color); }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(4, 6, 9, 0.85);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(6px);
+      text-align: left;
+    }
+    body[dir="rtl"] .modal-overlay { text-align: right; }
+
+    .modal-content {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 2.25rem;
+      width: 100%;
+      max-width: 540px;
+      position: relative;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 1.25rem; right: 1.25rem;
+      background: transparent; border: none;
+      color: var(--text-muted); font-size: 1.4rem; cursor: pointer;
+    }
+    body[dir="rtl"] .close-modal { right: auto; left: 1.25rem; }
+    .close-modal:hover { color: #fff; }
+
+    .form-group { margin-bottom: 1.25rem; }
+    .form-group label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.4rem; color: var(--text-main); }
+    .form-group input, .form-group select, .form-group textarea {
+      width: 100%; padding: 0.7rem 0.9rem; background: var(--bg-color); border: 1px solid var(--border-color); color: #fff; border-radius: 6px; font-family: inherit; font-size: 0.9rem;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 3rem 1.5rem; text-align: center;
+      font-size: 0.85rem; color: var(--text-muted);
+      margin-top: 5rem; background: var(--card-bg);
+    }
+
+    a:focus-visible, button:focus-visible, input:focus-visible,
+    select:focus-visible, textarea:focus-visible, [tabindex]:focus-visible {
+      outline: 2px solid var(--accent-green);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .live-indicator, .course-card, .researcher-card, .news-card { animation: none !important; transition: none !important; }
+    }
+
+    /* AUTH UI */
+    .auth-chip {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      padding: 0.35rem 0.75rem 0.35rem 0.35rem;
+      border-radius: 20px;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--text-main);
+      position: relative;
+    }
+    .auth-chip:hover { border-color: var(--border-bright); }
+    .auth-avatar {
+      width: 24px; height: 24px; border-radius: 50%;
+      background: var(--accent-green);
+      color: #000; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem;
+    }
+    .auth-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--card-bg);
+      border: 1px solid var(--border-bright);
+      border-radius: 8px;
+      min-width: 220px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+      overflow: hidden;
+      z-index: 200;
+    }
+    body[dir="rtl"] .auth-dropdown { right: auto; left: 0; }
+    .auth-dropdown.open { display: block; }
+    .auth-dropdown-item {
+      padding: 0.7rem 1rem;
+      font-size: 0.8rem;
+      color: var(--text-main);
+      cursor: pointer;
+      border-bottom: 1px solid var(--border-color);
+    }
+    .auth-dropdown-item:last-child { border-bottom: none; }
+    .auth-dropdown-item:hover { background: var(--card-hover); color: var(--accent-green); }
+    .auth-dropdown-email { color: var(--text-muted); font-size: 0.72rem; cursor: default; }
+    .auth-dropdown-email:hover { background: none; color: var(--text-muted); }
+
+    .auth-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 0.25rem;
+    }
+    .auth-tab {
+      flex: 1;
+      text-align: center;
+      padding: 0.55rem 0.5rem;
+      border-radius: 6px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      cursor: pointer;
+      background: transparent;
+      border: none;
+    }
+    .auth-tab.active { background: var(--accent-green); color: #000; font-weight: 700; }
+    .auth-error {
+      display: none;
+      background: rgba(255, 42, 75, 0.1);
+      border: 1px solid rgba(255, 42, 75, 0.4);
+      color: var(--accent-red);
+      font-size: 0.8rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+    }
+    .auth-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: -0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    /* COURSE META BADGES + CURRICULUM */
+    .course-badge-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+      flex-wrap: wrap;
+    }
+    .course-pill {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 0.2rem 0.55rem;
+      border-radius: 20px;
+      border: 1px solid var(--border-bright);
+      color: var(--text-muted);
+    }
+    .course-pill.level { color: var(--accent-orange); border-color: rgba(255, 153, 0, 0.35); background: rgba(255,153,0,0.08); }
+    .course-pill.duration { color: var(--accent-blue); border-color: rgba(0, 191, 255, 0.35); background: rgba(0,191,255,0.08); }
+
+    .curriculum-list {
+      list-style: none;
+      margin: 0 0 1.5rem 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+    .curriculum-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+    .curriculum-list li::before {
+      content: '???';
+      color: var(--accent-green);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .checkout-summary-card {
+      background: var(--bg-color);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 1rem 1.1rem;
+      margin-bottom: 1.25rem;
+    }
+    .checkout-summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      padding: 0.3rem 0;
+    }
+    .checkout-summary-row.total {
+      color: #fff;
+      font-weight: 700;
+      border-top: 1px dashed var(--border-color);
+      margin-top: 0.4rem;
+      padding-top: 0.6rem;
+    }
+
+    .checkout-process {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.6rem;
+      margin: 0 0 1.25rem;
+    }
+    .checkout-step {
+      background: rgba(18, 24, 36, 0.9);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 0.8rem 0.7rem;
+      text-align: center;
+    }
+    .checkout-step .step-number {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: rgba(0, 255, 102, 0.12);
+      border: 1px solid rgba(0, 255, 102, 0.4);
+      color: var(--accent-green);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-family: var(--font-mono);
+      margin-bottom: 0.35rem;
+      font-weight: 700;
+    }
+    .checkout-step small {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-family: var(--font-mono);
+    }
+
+    .checkout-trust {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      justify-content: center;
+      margin-top: 1rem;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+    .checkout-trust span {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 999px;
+      padding: 0.35rem 0.65rem;
+    }
+
+    .google-auth-btn {
+      width: 100%;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 1rem;
+      background: #fff;
+      color: #1f2937;
+      border: 1px solid #d1d5db;
+      font-weight: 700;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .google-auth-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 25px rgba(255,255,255,0.12);
+    }
+    .processing-indicator {
+      display: none;
+      margin-top: 0.7rem;
+      color: var(--accent-green);
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+    }
+    .processing-indicator.visible {
+      display: block;
+    }
+
+    /* Command-center visual hierarchy */
+    header { min-height: 64px; }
+    .brand { font-family: var(--font-display); letter-spacing: 0.01em; }
+    .hero { text-align: left; padding-top: 4.5rem; }
+    .hero-content { max-width: 1250px; width: 100%; }
+    .hero h1 { max-width: 760px; font-family: var(--font-display); font-size: clamp(2.35rem, 5vw, 4.5rem); }
+    .hero p { max-width: 650px; margin-left: 0; }
+    .hero-cta-group { justify-content: flex-start; }
+    .hero-badge { border-radius: 5px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .radar-container { margin-top: 3.5rem; }
+    .map-panel, .telemetry-panel, .course-card, .researcher-card, .news-card, .metric-card { border-radius: 6px; }
+    .map-panel, .telemetry-panel { box-shadow: 0 18px 50px rgba(0,0,0,0.35); }
+    .section-title { font-family: var(--font-display); font-size: 1.7rem; }
+    .course-card { border-top: 2px solid var(--border-bright); }
+    .course-card:hover { border-top-color: var(--accent-green); }
+    .course-video-wrapper { background: linear-gradient(135deg, #081426, #111827); }
+    .course-video-wrapper::after { content: 'LAB PREVIEW'; position: absolute; top: 0.75rem; left: 0.75rem; padding: 0.25rem 0.45rem; color: var(--accent-green); background: rgba(2,4,6,0.8); border: 1px solid rgba(0,255,102,0.35); border-radius: 3px; font: 700 0.62rem var(--font-mono); letter-spacing: 0.08em; }
+    .card-title, .course-title { font-family: var(--font-display); }
+    .checkout-card-placeholder { color: var(--text-muted); font: 0.75rem var(--font-mono); padding: 0.85rem; border: 1px dashed var(--border-bright); background: rgba(0,0,0,0.18); }
+    .assistant-launcher { position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 900; border: 1px solid var(--accent-green); background: #07130f; color: var(--accent-green); padding: 0.75rem 1rem; border-radius: 5px; cursor: pointer; font: 700 0.72rem var(--font-mono); letter-spacing: 0.05em; box-shadow: 0 8px 24px rgba(0,0,0,0.45); }
+    .assistant-launcher:hover { background: var(--accent-green); color: #000; }
+    .assistant-panel { display: none; position: fixed; right: 1.25rem; bottom: 4.9rem; z-index: 899; width: min(390px, calc(100vw - 2rem)); background: #080d14; border: 1px solid var(--border-bright); border-top: 2px solid var(--accent-green); border-radius: 6px; box-shadow: 0 20px 60px rgba(0,0,0,0.65); overflow: hidden; }
+    .assistant-panel.open { display: block; animation: assistant-in 0.2s ease-out; }
+    @keyframes assistant-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    .assistant-head { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; border-bottom: 1px solid var(--border-color); }
+    .assistant-title { color: #fff; font: 700 0.82rem var(--font-mono); letter-spacing: 0.05em; }
+    .assistant-status { color: var(--accent-green); font: 0.65rem var(--font-mono); }
+    .assistant-status::before { content: '??? '; }
+    .assistant-close { border: 0; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; }
+    .assistant-messages { display: flex; flex-direction: column; gap: 0.65rem; max-height: 280px; overflow-y: auto; padding: 1rem; }
+    .assistant-message { max-width: 92%; padding: 0.65rem 0.75rem; border-radius: 4px; color: var(--text-main); font-size: 0.78rem; line-height: 1.5; white-space: pre-wrap; }
+    .assistant-message.bot { align-self: flex-start; background: #101925; border-left: 2px solid var(--accent-green); }
+    .assistant-message.user { align-self: flex-end; background: rgba(0,255,102,0.1); border-right: 2px solid var(--accent-green); }
+    .assistant-prompts { display: flex; flex-wrap: wrap; gap: 0.4rem; padding: 0 1rem 0.8rem; }
+    .assistant-prompt { border: 1px solid var(--border-bright); border-radius: 3px; background: transparent; color: var(--text-muted); cursor: pointer; padding: 0.35rem 0.5rem; font: 0.62rem var(--font-mono); }
+    .assistant-prompt:hover { color: var(--accent-green); border-color: var(--accent-green); }
+    .assistant-form { display: flex; gap: 0.5rem; padding: 0.75rem; border-top: 1px solid var(--border-color); }
+    .assistant-input { min-width: 0; flex: 1; padding: 0.65rem; border: 1px solid var(--border-color); border-radius: 3px; background: var(--bg-color); color: #fff; font: 0.75rem var(--font-mono); }
+    .assistant-send { border: 1px solid var(--accent-green); border-radius: 3px; background: var(--accent-green); color: #000; cursor: pointer; padding: 0 0.8rem; font: 700 0.7rem var(--font-mono); }
+    .site-nav { display: flex; align-items: center; gap: 1.2rem; margin-left: auto; margin-right: 1.5rem; }
+    .site-nav a { color: var(--text-muted); font: 0.72rem var(--font-mono); letter-spacing: 0.06em; text-decoration: none; text-transform: uppercase; transition: color 0.2s ease; }
+    .site-nav a::before { content: '// '; color: var(--accent-green); }
+    .site-nav a:hover { color: #fff; }
+    .hero::before { content: 'SYS.STATUS / DEFENSIVE RESEARCH NETWORK'; display: block; max-width: 1250px; margin: 0 auto 1.25rem; color: rgba(226,232,240,0.35); font: 0.65rem var(--font-mono); letter-spacing: 0.14em; }
+    .hero-content { position: relative; }
+    .hero-content::after { content: '01'; position: absolute; right: 0; top: 0; color: rgba(0,255,102,0.22); font: 700 5rem var(--font-mono); line-height: 1; }
+    .map-header { padding-bottom: 0.7rem; border-bottom: 1px solid rgba(255,255,255,0.06); }
+    .metric-card { min-height: 108px; display: flex; flex-direction: column; justify-content: center; }
+    .section-header { border-left: 2px solid var(--accent-green); padding-left: 1rem; }
+    body[dir="rtl"] .section-header { border-left: 0; border-right: 2px solid var(--accent-green); padding-left: 0; padding-right: 1rem; }
+    .news-card, .course-card, .researcher-card { box-shadow: 0 12px 28px rgba(0,0,0,0.18); }
+    .news-card:hover, .course-card:hover, .researcher-card:hover { box-shadow: 0 18px 36px rgba(0,255,102,0.1); }
+    @media (max-width: 1100px) and (min-width: 768px) {
+      header { padding-left: 1rem; padding-right: 1rem; }
+      .site-nav { gap: 0.7rem; margin-right: 0.7rem; }
+      .nav-actions { gap: 0.55rem; }
+      .nav-actions .status-bar { display: none; }
+      .nav-actions .btn-primary { padding-left: 0.75rem; padding-right: 0.75rem; }
+    }
+    @media (max-width: 767px) {
+      header { padding: 0.75rem 1rem; }
+      .nav-actions { gap: 0.5rem; }
+      .nav-actions .status-bar, .nav-actions .btn-primary { display: none; }
+      .site-nav { display: none; }
+      .hero { padding-top: 3rem; }
+      .hero h1 { font-size: clamp(2rem, 11vw, 3rem); }
+      .hero::before { margin-bottom: 1rem; font-size: 0.55rem; }
+      .hero-content::after { font-size: 3rem; }
+      .hero-cta-group { align-items: stretch; flex-direction: column; }
+      .hero-cta-group button { width: 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <span class="brand-shield">???????</span>
+      <span>Symmetrix</span>
+      <div class="live-indicator" title="Feeds Active"></div>
+    </div>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="#advisories">Intel</a>
+      <a href="#capabilities">Services</a>
+    </nav>
+    <div class="nav-actions">
+      <select id="lang-switcher" class="lang-select" onchange="switchLanguage(this.value)">
+        <option value="en">English</option>
+        <option value="fr">Fran??ais</option>
+        <option value="ar">??????????????</option>
+      </select>
+      <div class="status-bar" id="status-text" data-i18n="initSync">Initializing feed sync...</div>
+
+      <!-- AUTH: shown when logged out -->
+      <button class="btn-secondary" id="auth-signin-btn" onclick="openAuthModal('login')" data-i18n="signInBtn">Sign In</button>
+
+      <!-- AUTH: shown when logged in -->
+      <div class="auth-chip" id="auth-chip" style="display:none;" onclick="toggleAuthDropdown()">
+        <span class="auth-avatar" id="auth-avatar">?</span>
+        <span id="auth-chip-label">...</span>
+        <div class="auth-dropdown" id="auth-dropdown">
+          <div class="auth-dropdown-item auth-dropdown-email" id="auth-dropdown-email"></div>
+          <div class="auth-dropdown-item" onclick="openEnrolledCoursesModal()" data-i18n="myCoursesBtn">My Enrolled Courses & Certificates</div>
+          <div class="auth-dropdown-item" onclick="handleLogout()" data-i18n="logoutBtn">Log Out</div>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="openModal('report-modal')">
+        <span>???</span> <span data-i18n="reportVulnBtn">Report Vulnerability</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="hero-badge">
+        <span>???</span> <span data-i18n="heroBadge">White-Hat Security & Ethical Research</span>
+      </span>
+      <h1 data-i18n="heroTitle">Protecting Applications Through <span>Responsible Disclosure</span></h1>
+      <p data-i18n="heroSubtitle">Symmetrix is an ethical security research group. We identify website bugs, audit infrastructure, and help developers patch security risks safely.</p>
+      
+      <div class="hero-cta-group">
+        <button class="btn-primary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;" onclick="openModal('contact-modal')" data-i18n="auditBtn">
+          Request Security Audit
+        </button>
+        <button class="btn-secondary" style="padding: 0.75rem 1.5rem; font-size: 0.95rem;" onclick="openModal('report-modal')" data-i18n="submitBugBtn">
+          Submit Bug Report
+        </button>
+      </div>
+    </div>
+
+    <!-- RADAR MAP -->
+    <div class="radar-container">
+      <div class="map-panel">
+        <div class="map-header">
+          <span class="panel-title-text" data-i18n="mapTelemetry">REAL WORLD MAP TELEMETRY</span>
+          <span style="font-size:0.75rem; color:var(--accent-green); font-family:var(--font-mono);" data-i18n="activeStream">ACTIVE STREAM</span>
+        </div>
+
+        <div id="leaflet-map">
+          <canvas id="canvas-overlay"></canvas>
+        </div>
+      </div>
+
+      <div class="telemetry-panel">
+        <div class="map-header">
+          <span style="font-size:0.8rem; color:var(--text-muted);" data-i18n="eventLogStream">EVENT LOG STREAM</span>
+          <span style="font-size:0.75rem; color:var(--accent-red);">LIVE</span>
+        </div>
+        <div class="stream-box" id="attack-stream"></div>
+      </div>
+    </div>
+
+    <div class="hero-metrics">
+      <div class="metric-card">
+        <div class="metric-value">100%</div>
+        <div class="metric-label" data-i18n="metricEthical">Ethical Disclosure</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" data-i18n="metricEncrypted">Encrypted</div>
+        <div class="metric-label" data-i18n="metricAnonymous">Anonymous Ingestion</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-value" id="event-count">0</div>
+        <div class="metric-label" data-i18n="metricThreats">Active Threat Alerts</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN CONTENT AREA -->
+  <main>
+    <div class="section-header" id="advisories">
+      <div>
+        <h2 class="section-title" data-i18n="advisoriesTitle">Security Intelligence Advisories</h2>
+        <p class="section-subtitle" data-i18n="advisoriesSub">Real-time alerts aggregated across primary cybersecurity advisories.</p>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input type="text" id="search-bar" class="search-input" placeholder="Search advisories (e.g., CVE, Zero-day)..." data-i18n-placeholder="searchPlaceholder" />
+      <button class="refresh-btn" id="refresh-btn">???? <span data-i18n="refreshBtn">Refresh Feeds</span></button>
+    </div>
+
+    <div class="news-grid" id="news-container"></div>
+
+    <!-- LEAD RESEARCHER GALLERY -->
+    <div class="researcher-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title" data-i18n="researcherTitle">Lead Security Researcher</h2>
+          <p class="section-subtitle" data-i18n="researcherSub">Operational profiles and threat intelligence field captures.</p>
+        </div>
+      </div>
+
+      <div class="researcher-grid">
+        <div class="researcher-card">
+          <div class="researcher-img-wrapper">
+            <img src="367cbd1d-3e95-46ba-b116-e95403944fab.jpg" alt="Threat Intelligence & Anonymous Mask Operations" />
+            <div class="researcher-badge-overlay" data-i18n="badge1">Active Intel</div>
+          </div>
+          <div class="researcher-info">
+            <div class="researcher-tag" data-i18n="tag1">Threat Intelligence</div>
+            <h3 class="researcher-title" data-i18n="res1Title">Anonymous Operations & Mask Protocol</h3>
+            <p class="researcher-desc" data-i18n="res1Desc">Conducting covert threat analysis and simulating advanced adversarial tactics to uncover systemic infrastructure weaknesses before malicious actors strike.</p>
+          </div>
+        </div>
+
+        <div class="researcher-card">
+          <div class="researcher-img-wrapper">
+            <img src="a262b845-91aa-4615-8ccf-850cba8e6787.jpg" alt="Active Terminal Analysis" />
+            <div class="researcher-badge-overlay" data-i18n="badge2">Live Session</div>
+          </div>
+          <div class="researcher-info">
+            <div class="researcher-tag" data-i18n="tag2">Vulnerability Research</div>
+            <h3 class="researcher-title" data-i18n="res2Title">Active Terminal Code Analysis</h3>
+            <p class="researcher-desc" data-i18n="res2Desc">Performing deep-dive source code reviews, database audits, and zero-day patch verifications to secure enterprise web applications against injection flaws.</p>
+          </div>
+        </div>
+
+        <div class="researcher-card">
+          <div class="researcher-img-wrapper">
+            <img src="abd61d5f-4403-468e-a3b1-5bed3270c43b.jpg" alt="Node Telemetry Oversight" />
+            <div class="researcher-badge-overlay" data-i18n="badge3">Secured Node</div>
+          </div>
+          <div class="researcher-info">
+            <div class="researcher-tag" data-i18n="tag3">Infrastructure Defense</div>
+            <h3 class="researcher-title" data-i18n="res3Title">Node Telemetry & Perimeter Defense</h3>
+            <p class="researcher-desc" data-i18n="res3Desc">Monitoring real-time traffic vectors and configuring high-security gateway controls to mitigate unauthorized network intrusions and distributed attacks.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-header" id="capabilities">
+      <div>
+        <h2 class="section-title" data-i18n="capabilitiesTitle">White-Hat Capabilities</h2>
+        <p class="section-subtitle" data-i18n="capabilitiesSub">Helping business owners and developers build resilient web applications.</p>
+      </div>
+    </div>
+
+    <div class="services-grid">
+      <div class="service-card">
+        <div class="service-icon">????</div>
+        <h3 data-i18n="serv1Title">Web Application Auditing</h3>
+        <p data-i18n="serv1Desc">Comprehensive testing to discover XSS, SQLi, CSRF, and authorization flaws before malicious hackers do.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">???????</div>
+        <h3 data-i18n="serv2Title">Responsible Disclosure</h3>
+        <p data-i18n="serv2Desc">Private and detailed bug reports with exact reproduction steps delivered directly to website owners.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">??????</div>
+        <h3 data-i18n="serv3Title">Remediation Guidance</h3>
+        <p data-i18n="serv3Desc">Step-by-step assistance for developers on configuring security headers, fixing CORS, and securing endpoints.</p>
+      </div>
+      <div class="service-card">
+        <div class="service-icon">????</div>
+        <h3 data-i18n="serv4Title">Security Standards</h3>
+        <p data-i18n="serv4Desc">Best practice guidance on OWASP Top 10 vulnerabilities and server hardening procedures.</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- MODALS -->
+  <div class="modal-overlay" id="report-modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('report-modal')">&times;</button>
+      <h3 style="color:#fff; margin-bottom:0.4rem; font-size:1.2rem;" data-i18n="modalReportTitle">Submit Anonymous Bug Report</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;" data-i18n="modalReportSub">Transmitted securely to lead security researchers.</p>
+      
+      <form onsubmit="submitAnonymousForm(event, this, 'report-modal')">
+        <input type="hidden" name="_subject" value="[Symmetrix] New Vulnerability / Bug Report">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+
+        <div class="form-group">
+          <label data-i18n="formEmail">Your Email (Optional for reply)</label>
+          <input type="email" name="Reply_To_Email" placeholder="optional@domain.com" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="formDomain">Target Website / Domain</label>
+          <input type="url" name="Target_Domain" placeholder="https://example.com" required />
+        </div>
+        <div class="form-group">
+          <label data-i18n="formVulnType">Vulnerability Category</label>
+          <select name="Vulnerability_Type">
+            <option data-i18n="optXSS">Cross-Site Scripting (XSS)</option>
+            <option data-i18n="optSQLi">SQL Injection (SQLi)</option>
+            <option data-i18n="optHeaders">Missing Security Headers</option>
+            <option data-i18n="optAuth">Authentication Bypass</option>
+            <option data-i18n="optOther">Other Bug</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label data-i18n="formDetails">Reproduction Details</label>
+          <textarea name="Bug_Details" rows="4" placeholder="Detail reproduction steps..." data-i18n-placeholder="detailsPlaceholder" required></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.75rem;" data-i18n="sendReportBtn">Send Bug Report</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="contact-modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('contact-modal')">&times;</button>
+      <h3 style="color:#fff; margin-bottom:0.4rem; font-size:1.2rem;" data-i18n="modalAuditTitle">Request Security Audit</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;" data-i18n="modalAuditSub">Send a private inquiry regarding penetration testing.</p>
+      
+      <form onsubmit="submitAnonymousForm(event, this, 'contact-modal')">
+        <input type="hidden" name="_subject" value="[Symmetrix] New Security Audit Request">
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+
+        <div class="form-group">
+          <label data-i18n="formName">Name or Organization</label>
+          <input type="text" name="Sender_Name" placeholder="Client Name" required />
+        </div>
+        <div class="form-group">
+          <label data-i18n="formContactEmail">Contact Email</label>
+          <input type="email" name="Contact_Email" placeholder="name@company.com" required />
+        </div>
+        <div class="form-group">
+          <label data-i18n="formScope">Audit Scope & Message</label>
+          <textarea name="Audit_Message" rows="4" placeholder="Provide target domains..." data-i18n-placeholder="scopePlaceholder" required></textarea>
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%; justify-content:center; padding:0.75rem;" data-i18n="sendAuditBtn">Submit Audit Request</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- AUTH MODAL: SIGN IN / SIGN UP -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal('auth-modal')">&times;</button>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" id="auth-tab-login" onclick="setAuthTab('login')" data-i18n="authTabLogin">Log In</button>
+        <button type="button" class="auth-tab" id="auth-tab-signup" onclick="setAuthTab('signup')" data-i18n="authTabSignup">Create Account</button>
+      </div>
+
+      <button type="button" class="btn-secondary google-auth-btn" onclick="handleGoogleLogin()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.14C3.15 21.32 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.39-1.49-.39-2.24s.14-1.52.39-2.24V6.62H1.18C.43 8.14 0 9.87 0 12s.43 3.86 1.18 5.38l4.09-3.14z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.15 2.68 1.18 6.62l4.09 3.14c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+        <span data-i18n="googleSignIn">Continue with Google</span>
+      </button>
+
+      <div style="display:flex; align-items:center; gap:1rem; margin-bottom:1rem; color:var(--text-muted); font-size:0.75rem; font-family:var(--font-mono);">
+        <div style="flex:1; height:1px; background:var(--border-color);"></div>
+        <span data-i18n="orEmail">OR EMAIL</span>
+        <div style="flex:1; height:1px; background:var(--border-color);"></div>
+      </div>
+
+      <p id="auth-context-hint" class="auth-hint" style="display:none;" data-i18n="authRequiredForCourse">Sign in to enroll ??? course access is tied to your account.</p>
+      <div class="auth-error" id="auth-error"></div>
+
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)">
+        <div class="form-group">
+          <label data-i18n="authEmailLabel">Email</label>
+          <input type="email" id="auth-email" placeholder="you@domain.com" required />
+        </div>
+        <div class="form-group">
+          <label data-i18n="authPasswordLabel">Password</label>
+          <input type="password" id="auth-password" placeholder="????????????????????????" minlength="6" required />
+        </div>
+        <button type="submit" class="btn-primary" id="auth-submit-btn" style="width:100%; justify-content:center; padding:0.75rem;" data-i18n="authSubmitLogin">Log In</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- UPGRADED CHECKOUT MODAL (STRIPE ELEMENTS + CREDIT CARD FORM) -->
+  <div class="modal-overlay" id="checkout-modal">
+    <div class="modal-content" style="max-width: 580px;">
+      <button class="close-modal" onclick="closeModal('checkout-modal')">&times;</button>
+      <h3 style="color:#fff; margin-bottom:0.4rem; font-size:1.2rem;" data-i18n="modalCheckoutTitle">Secure Credit Card Checkout</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.25rem;" data-i18n="modalCheckoutSub">Processed securely by Stripe. Encrypted with 256-Bit TLS and PCI-DSS Level 1 compliant.</p>
+
+      <div class="checkout-process">
+        <div class="checkout-step">
+          <div class="step-number">1</div>
+          <small>Sign in</small>
+        </div>
+        <div class="checkout-step">
+          <div class="step-number">2</div>
+          <small>Review</small>
+        </div>
+        <div class="checkout-step">
+          <div class="step-number">3</div>
+          <small>Pay</small>
+        </div>
+      </div>
+
+      <div class="checkout-summary-card">
+        <div class="checkout-summary-row">
+          <span data-i18n="checkoutCourseLabel">Course</span>
+          <span id="checkout-course-name">???</span>
+        </div>
+        <div class="checkout-summary-row">
+          <span data-i18n="checkoutAccountLabel">Enrolling as</span>
+          <span id="checkout-account-email">???</span>
+        </div>
+        <div class="checkout-summary-row total">
+          <span data-i18n="checkoutTotalLabel">Total</span>
+          <span id="checkout-course-price">???</span>
+        </div>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 1rem;">
+        <label data-i18n="promoLabel">Promo Code (e.g., SYMMETRIX20)</label>
+        <div style="display:flex; gap:0.5rem;">
+          <input type="text" id="promo-code-input" placeholder="ENTER CODE" style="text-transform:uppercase; font-family:var(--font-mono);" />
+          <button type="button" class="btn-secondary" onclick="applyPromoCode()" data-i18n="applyPromo">Apply</button>
+        </div>
+        <div id="promo-feedback" style="font-size:0.75rem; margin-top:0.3rem; font-family:var(--font-mono);"></div>
+      </div>
+
+      <div class="form-group">
+        <label data-i18n="cardDetailsLabel">Credit or Debit Card</label>
+        <div id="stripe-card-element" style="background:var(--bg-color); border:1px solid var(--border-color); padding:0.9rem; border-radius:6px; margin-bottom:0.5rem;"></div>
+        <div id="stripe-card-errors" class="auth-error" role="alert"></div>
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
+        <button class="btn-primary" id="stripe-pay-btn" style="flex:1; justify-content:center; padding:0.8rem;" onclick="processStripePayment()" data-i18n="payNowBtn">Pay Securely with Card</button>
+        <button class="btn-secondary" style="padding:0.8rem;" onclick="goToStripeCheckout()" title="Open Stripe Checkout Page">Stripe Page ???</button>
+      </div>
+
+      <div class="processing-indicator" id="processing-indicator">Processing secure payment???</div>
+
+      <div class="checkout-trust">
+        <span>???? Visa / MC / Amex</span>
+        <span>???? Apple Pay</span>
+        <span>???? Google Pay</span>
+        <span>???? 256-Bit SSL</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ENROLLED COURSES MODAL -->
+  <div class="modal-overlay" id="enrolled-modal">
+    <div class="modal-content" style="max-width: 600px;">
+      <button class="close-modal" onclick="closeModal('enrolled-modal')">&times;</button>
+      <h3 style="color:#fff; margin-bottom:0.4rem; font-size:1.2rem;" data-i18n="enrolledModalTitle">My Enrolled Courses & Certificates</h3>
+      <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:1.5rem;" data-i18n="enrolledModalSub">Access your purchased academy courses, lab VMs, and verified completion certificates.</p>
+      
+      <div id="enrolled-courses-list" style="display:flex; flex-direction:column; gap:1rem; max-height:350px; overflow-y:auto; margin-bottom:1.5rem;"></div>
+      <button class="btn-secondary" style="width:100%; justify-content:center;" onclick="closeModal('enrolled-modal')" data-i18n="closeBtn">Close</button>
+    </div>
+  </div>
+
+  <!-- CERTIFICATE MODAL -->
+  <div class="modal-overlay" id="certificate-modal">
+    <div class="modal-content" style="max-width: 700px; text-align: center; border: 2px solid var(--accent-green);">
+      <button class="close-modal" onclick="closeModal('certificate-modal')">&times;</button>
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">???????</div>
+      <h3 style="color: var(--accent-green); font-family: var(--font-mono); font-size: 1.4rem; letter-spacing: 0.05em;" data-i18n="certHeader">CERTIFICATE OF COMPLETION</h3>
+      <p style="color: var(--text-muted); font-size: 0.8rem; margin-bottom: 1.5rem;" data-i18n="certSub">Symmetrix Security Academy ??? Verified Offensive Security Credential</p>
+      
+      <div style="background: var(--bg-color); border: 1px dashed var(--border-bright); padding: 2rem; border-radius: 8px; margin-bottom: 1.5rem;">
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;" data-i18n="certAwardTo">This certifies that</p>
+        <h2 id="cert-user-name" style="color: #fff; font-size: 1.5rem; margin-bottom: 0.5rem;">student@domain.com</h2>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1rem;" data-i18n="certCompletedCourse">has successfully completed the comprehensive curriculum for</p>
+        <h3 id="cert-course-title" style="color: var(--accent-green); font-size: 1.2rem; margin-bottom: 1.5rem;">Advanced Web Pentesting & XSS Mastery</h3>
+        <div style="display: flex; justify-content: space-around; font-size: 0.75rem; font-family: var(--font-mono); color: var(--text-muted); border-top: 1px solid var(--border-color); padding-top: 1rem;">
+          <span>Credential ID: SYM-2026-9842</span>
+          <span>Verified By: Symmetrix Research</span>
+        </div>
+      </div>
+
+      <div style="display: flex; gap: 1rem;">
+        <button class="btn-primary" style="flex: 1; justify-content: center;" onclick="window.print()" data-i18n="printCertBtn">??????? Print / Save PDF Certificate</button>
+        <button class="btn-secondary" onclick="closeModal('certificate-modal')" data-i18n="closeBtn">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p data-i18n="footerText">&copy; 2026 Symmetrix Security Research. Defensive cybersecurity initiative.</p>
+  </footer>
+
+  <button class="assistant-launcher" id="assistant-launcher" type="button" aria-expanded="false" aria-controls="assistant-panel" onclick="toggleAssistant()">AI / SOC COPILOT</button>
+  <aside class="assistant-panel" id="assistant-panel" aria-label="AI security assistant">
+    <div class="assistant-head">
+      <div><div class="assistant-title">SOC COPILOT</div><div class="assistant-status">GENERATIVE / DEFENSIVE MODE</div></div>
+      <button class="assistant-close" type="button" aria-label="Close assistant" onclick="toggleAssistant()">&times;</button>
+    </div>
+    <div class="assistant-messages" id="assistant-messages" aria-live="polite">
+      <div class="assistant-message bot">I can help triage alerts, improve defensive configuration, or structure a responsible disclosure report.</div>
+    </div>
+    <div class="assistant-prompts" id="assistant-prompts">
+      <button class="assistant-prompt" type="button" onclick="askAssistant('How should I triage a suspicious login alert?')">Triage a login alert</button>
+      <button class="assistant-prompt" type="button" onclick="askAssistant('What security headers should a production site use?')">Review headers</button>
+      <button class="assistant-prompt" type="button" onclick="askAssistant('How do I write a responsible vulnerability report?')">Write a report</button>
+    </div>
+    <form class="assistant-form" onsubmit="submitAssistant(event)">
+      <input class="assistant-input" id="assistant-input" maxlength="2000" placeholder="Ask a defensive security question..." autocomplete="off" />
+      <button class="assistant-send" type="submit">SEND</button>
+    </form>
+  </aside>
+
+  <!-- LEAFLET SCRIPT & SUPABASE -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+  <script>
+    /* MULTI-LANGUAGE DICTIONARY (5 REAL COURSES) */
+    const translations = {
+      en: {
+        pageTitle: "Symmetrix | White-Hat Research & Threat Intel",
+        initSync: "Initializing feed sync...",
+        reportVulnBtn: "Report Vulnerability",
+        heroBadge: "White-Hat Security & Ethical Research",
+        heroTitle: "Protecting Applications Through <span>Responsible Disclosure</span>",
+        heroSubtitle: "Symmetrix is an ethical security research group. We identify website bugs, audit infrastructure, and help developers patch security risks safely.",
+        auditBtn: "Request Security Audit",
+        submitBugBtn: "Submit Bug Report",
+        mapTelemetry: "REAL WORLD MAP TELEMETRY",
+        activeStream: "ACTIVE STREAM",
+        eventLogStream: "EVENT LOG STREAM",
+        metricEthical: "Ethical Disclosure",
+        metricEncrypted: "Encrypted",
+        metricAnonymous: "Anonymous Ingestion",
+        metricThreats: "Active Threat Alerts",
+        advisoriesTitle: "Security Intelligence Advisories",
+        advisoriesSub: "Real-time alerts aggregated across primary cybersecurity advisories.",
+        searchPlaceholder: "Search advisories (e.g., CVE, Zero-day)...",
+        refreshBtn: "Refresh Feeds",
+        coursesTitle: "Symmetrix Security Academy & Courses",
+        coursesSub: "Master offensive security, penetration testing, and code auditing with hands-on video modules and downloadable labs.",
+        buyCourseBtn: "Buy Course & Enroll",
+        modalCheckoutTitle: "Secure Credit Card Checkout",
+        modalCheckoutSub: "Processed securely by Stripe. Encrypted with 256-Bit TLS and PCI-DSS Level 1 compliant.",
+        cardDetailsLabel: "Credit or Debit Card",
+        payNowBtn: "Pay Securely with Card",
+        checkoutCourseLabel: "Course",
+        checkoutAccountLabel: "Enrolling as",
+        checkoutTotalLabel: "Total",
+        myCoursesBtn: "My Enrolled Courses & Certificates",
+        enrolledModalTitle: "My Enrolled Courses & Certificates",
+        enrolledModalSub: "Access your purchased academy courses, lab VMs, and verified completion certificates.",
+        closeBtn: "Close",
+        certHeader: "CERTIFICATE OF COMPLETION",
+        certSub: "Symmetrix Security Academy ??? Verified Offensive Security Credential",
+        certAwardTo: "This certifies that",
+        certCompletedCourse: "has successfully completed the comprehensive curriculum for",
+        printCertBtn: "??????? Print / Save PDF Certificate",
+
+        course1Title: "Advanced Web Pentesting & XSS Mastery",
+        course1Desc: "Learn how to spot deep cross-site scripting vulnerabilities, inspect DOM parameters, and safely validate payloads.",
+        course1Level: "Intermediate",
+        course1Duration: "3h 40m ?? 14 lessons",
+        course1Curriculum: [
+          "Mapping DOM, reflected, and stored XSS surfaces",
+          "Safely validating payloads in an isolated sandbox",
+          "Reading and hardening Content-Security-Policy headers",
+          "Writing a disclosure-ready proof of concept"
+        ],
+        course2Title: "SQL Injection & Enterprise Database Auditing",
+        course2Desc: "Comprehensive guide to understanding database query logic flaws, union-based injections, and ORM remediation strategies.",
+        course2Level: "Advanced",
+        course2Duration: "4h 10m ?? 16 lessons",
+        course2Curriculum: [
+          "Recognizing query logic flaws before they ship",
+          "Union-based and blind injection detection methods",
+          "Parameterized queries and ORM-safe patterns",
+          "Auditing a schema for least-privilege access"
+        ],
+        course3Title: "Cloud Infrastructure Defense & K8s Hardening",
+        course3Desc: "Configure secure gateway controls, prevent container escapes, and protect enterprise Kubernetes clusters effectively.",
+        course3Level: "Intermediate",
+        course3Duration: "5h 00m ?? 15 lessons",
+        course3Curriculum: [
+          "Configuring RBAC and PodSecurity policies",
+          "Detecting container runtime escapes and lateral movement",
+          "Hardening Istio service mesh ingress/egress",
+          "Building automated cloud threat hunting playbooks"
+        ],
+        course4Title: "Zero-Day Vulnerability Research & Binary Analysis",
+        course4Desc: "Master Ghidra reverse engineering, memory corruption identification, and heap exploitation mitigation protocols.",
+        course4Level: "Expert",
+        course4Duration: "6h 30m ?? 20 lessons",
+        course4Curriculum: [
+          "Disassembling ELF/PE binaries with Ghidra & IDA",
+          "Identifying stack overflows and format string bugs",
+          "Bypassing ASLR, DEP, and stack canaries",
+          "Writing robust shellcode and exploit harnesses"
+        ],
+        course5Title: "API Security Architecture & OAuth2/JWT Hardening",
+        course5Desc: "Secure REST and GraphQL endpoints against BOLA, broken auth, token signature manipulation, and rate-limiting bypasses.",
+        course5Level: "Intermediate",
+        course5Duration: "3h 50m ?? 12 lessons",
+        course5Curriculum: [
+          "Auditing REST and GraphQL authorization boundaries",
+          "Spotting JWT algorithm confusion and secret brute-forcing",
+          "Implementing robust OAuth2 scopes and PKCE flows",
+          "Enforcing intelligent API rate limiting and WAF rules"
+        ],
+
+        researcherTitle: "Lead Security Researcher",
+        researcherSub: "Operational profiles and threat intelligence field captures.",
+        badge1: "Active Intel",
+        tag1: "Threat Intelligence",
+        res1Title: "Anonymous Operations & Mask Protocol",
+        res1Desc: "Conducting covert threat analysis and simulating advanced adversarial tactics to uncover systemic infrastructure weaknesses before malicious actors strike.",
+        badge2: "Live Session",
+        tag2: "Vulnerability Research",
+        res2Title: "Active Terminal Code Analysis",
+        res2Desc: "Performing deep-dive source code reviews, database audits, and zero-day patch verifications to secure enterprise web applications against injection flaws.",
+        badge3: "Secured Node",
+        tag3: "Infrastructure Defense",
+        res3Title: "Node Telemetry & Perimeter Defense",
+        res3Desc: "Monitoring real-time traffic vectors and configuring high-security gateway controls to mitigate unauthorized network intrusions and distributed attacks.",
+        capabilitiesTitle: "White-Hat Capabilities",
+        capabilitiesSub: "Helping business owners and developers build resilient web applications.",
+        serv1Title: "Web Application Auditing",
+        serv1Desc: "Comprehensive testing to discover XSS, SQLi, CSRF, and authorization flaws before malicious hackers do.",
+        serv2Title: "Responsible Disclosure",
+        serv2Desc: "Private and detailed bug reports with exact reproduction steps delivered directly to website owners.",
+        serv3Title: "Remediation Guidance",
+        serv3Desc: "Step-by-step assistance for developers on configuring security headers, fixing CORS, and securing endpoints.",
+        serv4Title: "Security Standards",
+        serv4Desc: "Best practice guidance on OWASP Top 10 vulnerabilities and server hardening procedures.",
+        modalReportTitle: "Submit Anonymous Bug Report",
+        modalReportSub: "Transmitted securely to lead security researchers.",
+        formEmail: "Your Email (Optional for reply)",
+        formDomain: "Target Website / Domain",
+        formVulnType: "Vulnerability Category",
+        optXSS: "Cross-Site Scripting (XSS)",
+        optSQLi: "SQL Injection (SQLi)",
+        optHeaders: "Missing Security Headers",
+        optAuth: "Authentication Bypass",
+        optOther: "Other Bug",
+        formDetails: "Reproduction Details",
+        detailsPlaceholder: "Detail reproduction steps...",
+        sendReportBtn: "Send Bug Report",
+        modalAuditTitle: "Request Security Audit",
+        modalAuditSub: "Send a private inquiry regarding penetration testing.",
+        formName: "Name or Organization",
+        formContactEmail: "Contact Email",
+        formScope: "Audit Scope & Message",
+        scopePlaceholder: "Provide target domains...",
+        sendAuditBtn: "Submit Audit Request",
+        footerText: "&copy; 2026 Symmetrix Security Research. Defensive cybersecurity initiative.",
+        signInBtn: "Sign In",
+        logoutBtn: "Log Out",
+        authTabLogin: "Log In",
+        authTabSignup: "Create Account",
+        authRequiredForCourse: "Sign in to enroll ??? course access is tied to your account.",
+        authEmailLabel: "Email",
+        authPasswordLabel: "Password",
+        authSubmitLogin: "Log In",
+        authSubmitSignup: "Create Account",
+        authErrGeneric: "Something went wrong. Please try again.",
+        authErrInvalid: "Incorrect email or password.",
+        authErrWeakPassword: "Password must be at least 6 characters.",
+        authSignupSuccess: "Account created! You can now log in."
+      },
+      fr: {
+        pageTitle: "Symmetrix | Recherche White-Hat & Threat Intel",
+        initSync: "Initialisation de la synchro...",
+        reportVulnBtn: "Signaler une faille",
+        heroBadge: "S??curit?? White-Hat & Recherche ??thique",
+        heroTitle: "Prot??ger les applications par la <span>Divulgation Responsable</span>",
+        heroSubtitle: "Symmetrix est un groupe de recherche en s??curit?? ??thique. Nous identifions les bugs, auditons les infrastructures et aidons ?? corriger les risques.",
+        auditBtn: "Demander un audit",
+        submitBugBtn: "Soumettre un rapport",
+        mapTelemetry: "T??L??M??TRIE DE LA CARTE EN DIRECT",
+        activeStream: "FLUX ACTIF",
+        eventLogStream: "JOURNAL DES ??V??NEMENTS",
+        metricEthical: "Divulgation ??thique",
+        metricEncrypted: "Chiffr??",
+        metricAnonymous: "Ingestion Anonyme",
+        metricThreats: "Alertes Actives",
+        advisoriesTitle: "Avis de S??curit?? & Intelligence",
+        advisoriesSub: "Alertes en temps r??el agr??g??es ?? partir des principaux flux de cybers??curit??.",
+        searchPlaceholder: "Rechercher des avis (ex: CVE, Zero-day)...",
+        refreshBtn: "Actualiser",
+        coursesTitle: "Acad??mie de S??curit?? Symmetrix & Cours",
+        coursesSub: "Ma??trisez la s??curit?? offensive, les tests d'intrusion et l'audit de code avec des modules vid??o pratiques et des labs.",
+        buyCourseBtn: "Acheter le cours & s'inscrire",
+        modalCheckoutTitle: "Paiement Carte Bancaire S??curis??",
+        modalCheckoutSub: "Trait?? par Stripe. Chiffr?? TLS 256-Bit et conforme PCI-DSS Niveau 1.",
+        cardDetailsLabel: "Carte bancaire",
+        payNowBtn: "Payer en toute s??curit??",
+        checkoutCourseLabel: "Cours",
+        checkoutAccountLabel: "Inscription en tant que",
+        checkoutTotalLabel: "Total",
+        myCoursesBtn: "Mes cours & certificats",
+        enrolledModalTitle: "Mes cours & certificats",
+        enrolledModalSub: "Acc??dez ?? vos cours achet??s, VM de lab et certificats de r??ussite.",
+        closeBtn: "Fermer",
+        certHeader: "CERTIFICAT DE R??USSITE",
+        certSub: "Symmetrix Security Academy ??? Dipl??me de S??curit?? Offensive",
+        certAwardTo: "Ceci certifie que",
+        certCompletedCourse: "a compl??t?? avec succ??s le cursus de formation pour",
+        printCertBtn: "??????? Imprimer / Enregistrer le Certificat",
+
+        course1Title: "Pentesting Web Avanc?? & Ma??trise XSS",
+        course1Desc: "Apprenez ?? rep??rer les failles XSS, ?? inspecter les param??tres DOM et ?? valider les charges utiles.",
+        course1Level: "Interm??diaire",
+        course1Duration: "3h40 ?? 14 le??ons",
+        course1Curriculum: [
+          "Cartographier les surfaces XSS DOM, r??fl??chies et stock??es",
+          "Valider les charges utiles en toute s??curit?? dans un bac ?? sable",
+          "Lire et renforcer les en-t??tes Content-Security-Policy",
+          "R??diger une preuve de concept pr??te pour la divulgation"
+        ],
+        course2Title: "Injection SQL & Audit de Bases de Donn??es",
+        course2Desc: "Guide complet sur les failles de logique de requ??te, les injections union et les strat??gies de rem??diation ORM.",
+        course2Level: "Avanc??",
+        course2Duration: "4h10 ?? 16 le??ons",
+        course2Curriculum: [
+          "Reconna??tre les failles logiques de requ??tes",
+          "M??thodes de d??tection d'injection union et aveugle",
+          "Requ??tes param??tr??es et mod??les s??rs avec ORM",
+          "Auditer un sch??ma pour un acc??s ?? moindre privil??ge"
+        ],
+        course3Title: "D??fense Cloud & Durcissement Kubernetes",
+        course3Desc: "Configurez les passerelles, pr??venez les ??vasions de conteneur et prot??gez vos clusters Kubernetes.",
+        course3Level: "Interm??diaire",
+        course3Duration: "5h00 ?? 15 le??ons",
+        course3Curriculum: [
+          "Configuration des politiques RBAC et PodSecurity",
+          "D??tection des ??vasions d'ex??cution de conteneur",
+          "Durcissement des flux d'entr??e/sortie Istio",
+          "Cr??ation de playbooks de chasse aux menaces cloud"
+        ],
+        course4Title: "Recherche Zero-Day & Analyse Binaire",
+        course4Desc: "Ma??trisez le reverse engineering avec Ghidra, la corruption m??moire et les protections anti-exploitation.",
+        course4Level: "Expert",
+        course4Duration: "6h30 ?? 20 le??ons",
+        course4Curriculum: [
+          "D??sassemblage de binaires ELF/PE avec Ghidra et IDA",
+          "Identification des d??passements de tampon et format string",
+          "Contournement d'ASLR, DEP et canaris de pile",
+          "R??daction de shellcode et harnais d'exploitation"
+        ],
+        course5Title: "S??curit?? API & Durcissement OAuth2/JWT",
+        course5Desc: "S??curisez les points de terminaison REST et GraphQL contre les failles BOLA, authentification et JWT.",
+        course5Level: "Interm??diaire",
+        course5Duration: "3h50 ?? 12 le??ons",
+        course5Curriculum: [
+          "Audit des fronti??res d'autorisation REST et GraphQL",
+          "D??tection des confusions d'algorithme JWT et bruteforce",
+          "Mise en ??uvre de scopes OAuth2 robustes et flux PKCE",
+          "Application de limitation de d??bit et r??gles WAF"
+        ],
+
+        researcherTitle: "Chercheur en S??curit?? Principal",
+        researcherSub: "Profils op??rationnels et captures de cyber-intelligence.",
+        badge1: "Intel Actif",
+        tag1: "Renseignement sur les Menaces",
+        res1Title: "Op??rations Anonymes & Protocole Masqu??",
+        res1Desc: "Conduite d'analyses de menaces et simulation de tactiques contradictoires avanc??es pour d??couvrir les faiblesses d'infrastructure avant les acteurs malveillants.",
+        badge2: "Session Live",
+        tag2: "Recherche de Vuln??rabilit??s",
+        res2Title: "Analyse de Code Terminal Actif",
+        res2Desc: "R??alisation d'audits de code source, de bases de donn??es et de v??rification de patchs zero-day pour s??curiser les applications d'entreprise.",
+        badge3: "N??ud S??curis??",
+        tag3: "D??fense d'Infrastructure",
+        res3Title: "T??l??m??trie des N??uds & D??fense P??rim??trique",
+        res3Desc: "Surveillance des vecteurs de trafic en temps r??el et configuration des contr??les de passerelle haute s??curit?? pour contrer les intrusions.",
+        capabilitiesTitle: "Capacit??s White-Hat",
+        capabilitiesSub: "Aider les propri??taires et d??veloppeurs ?? cr??er des applications r??silientes.",
+        serv1Title: "Audit d'Applications Web",
+        serv1Desc: "Tests complets pour d??couvrir XSS, SQLi, CSRF et failles d'autorisation avant les pirates.",
+        serv2Title: "Divulgation Responsable",
+        serv2Desc: "Rapports de bugs priv??s et d??taill??s avec ??tapes de reproduction exactes livr??s aux propri??taires.",
+        serv3Title: "Conseils de Rem??diation",
+        serv3Desc: "Assistance ??tape par ??tape pour configurer les en-t??tes de s??curit??, corriger CORS et s??curiser les points de terminaison.",
+        serv4Title: "Normes de S??curit??",
+        serv4Desc: "Conseils sur les vuln??rabilit??s du Top 10 OWASP et proc??dures de durcissement des serveurs.",
+        modalReportTitle: "Soumettre un rapport anonyme",
+        modalReportSub: "Transmis en toute s??curit?? aux chercheurs principaux.",
+        formEmail: "Votre e-mail (Optionnel pour r??ponse)",
+        formDomain: "Site Web / Domaine Cible",
+        formVulnType: "Cat??gorie de Vuln??rabilit??",
+        optXSS: "Cross-Site Scripting (XSS)",
+        optSQLi: "Injection SQL (SQLi)",
+        optHeaders: "En-t??tes de s??curit?? manquants",
+        optAuth: "Contournement d'authentification",
+        optOther: "Autre Bug",
+        formDetails: "D??tails de Reproduction",
+        detailsPlaceholder: "D??tailler les ??tapes de reproduction...",
+        sendReportBtn: "Envoyer le Rapport",
+        modalAuditTitle: "Demander un Audit de S??curit??",
+        modalAuditSub: "Envoyez une demande priv??e concernant les tests d'intrusion.",
+        formName: "Nom ou Organisation",
+        formContactEmail: "E-mail de Contact",
+        formScope: "Port??e de l'Audit & Message",
+        scopePlaceholder: "Fournir les domaines cibles...",
+        sendAuditBtn: "Soumettre la Demande",
+        footerText: "&copy; 2026 Symmetrix Security Research. Initiative de cybers??curit?? d??fensive.",
+        signInBtn: "Connexion",
+        logoutBtn: "D??connexion",
+        authTabLogin: "Connexion",
+        authTabSignup: "Cr??er un compte",
+        authRequiredForCourse: "Connectez-vous pour vous inscrire ??? l'acc??s au cours est li?? ?? votre compte.",
+        authEmailLabel: "E-mail",
+        authPasswordLabel: "Mot de passe",
+        authSubmitLogin: "Connexion",
+        authSubmitSignup: "Cr??er un compte",
+        authErrGeneric: "Une erreur est survenue. Veuillez r??essayer.",
+        authErrInvalid: "E-mail ou mot de passe incorrect.",
+        authErrWeakPassword: "Le mot de passe doit contenir au moins 6 caract??res.",
+        authSignupSuccess: "Compte cr???? ! Vous pouvez maintenant vous connecter."
+      },
+      ar: {
+        pageTitle: "???????????????? | ?????????? ?????????????? ?????????????? ???????????????????? ??????????????????",
+        initSync: "???????? ???????????? ???????????? ????????????????...",
+        reportVulnBtn: "?????????????? ???? ????????",
+        heroBadge: "?????? ?????????????? ?????????????? ???????????????? ??????????????????",
+        heroTitle: "?????????? ?????????????????? ???? ???????? <span>?????????????? ??????????????</span>",
+        heroSubtitle: "???????????????? ???? ???????????? ?????????? ?????????? ??????????????. ?????????? ?????????? ???????????????? ???????? ???????????? ???????????????? ???????????? ???????????????? ?????? ?????????? ?????????????? ??????????.",
+        auditBtn: "?????? ?????????? ????????",
+        submitBugBtn: "?????????? ?????????? ??????",
+        mapTelemetry: "???????? ?????????? ???????????? ??????????",
+        activeStream: "???????? ??????????",
+        eventLogStream: "?????? ?????????????? ??????????????",
+        metricEthical: "?????????? ????????????",
+        metricEncrypted: "???????? ??????????????",
+        metricAnonymous: "???????? ?????????? ????????????",
+        metricThreats: "?????????????? ?????????????????? ????????????",
+        advisoriesTitle: "?????????????? ?????????????????????? ??????????????",
+        advisoriesSub: "?????????????? ???? ?????????? ???????????? ???????????? ?????? ?????????? ?????????? ?????????????????? ????????????????.",
+        searchPlaceholder: "?????????? ???? ?????????????????? (????????: CVE?? ???????? ??????????)...",
+        refreshBtn: "?????????? ????????????????",
+        coursesTitle: "???????????????? ???????????????? ?????????????? ???????????????? ??????????????????",
+        coursesSub: "???????? ?????????? ???????????????? ???????????? ?????????????????? ???????????? ?????????????? ???? ???????? ?????????? ?????????? ?????????????? ???????????????? ??????????.",
+        buyCourseBtn: "???????? ???????????? ??????????????????",
+        modalCheckoutTitle: "?????????? ?????????? ???????????? ????????????????",
+        modalCheckoutSub: "???????????? ???????? ?????? Stripe. ?????????? TLS 256-Bit ?????????????? ???? ?????????? PCI-DSS.",
+        cardDetailsLabel: "?????????? ???????????????? ???? ?????????? ??????????",
+        payNowBtn: "???????? ?????????? ????????????????",
+        checkoutCourseLabel: "????????????",
+        checkoutAccountLabel: "?????????????? ????????",
+        checkoutTotalLabel: "????????????????",
+        myCoursesBtn: "???????????? ??????????????????",
+        enrolledModalTitle: "???????????? ?????????????????? ????????????????",
+        enrolledModalSub: "???????????? ?????? ?????????????? ?????????????????? ?????????????????? ???????????????? ?????????????? ?????????????? ?????????? ????????????.",
+        closeBtn: "??????????",
+        certHeader: "?????????? ?????????? ??????????",
+        certSub: "???????????????? ???????????????? ?????????????? ??? ???????????? ?????????? ?????????????? ????????????",
+        certAwardTo: "?????????? ?????? ?????????????? ??????",
+        certCompletedCourse: "?????????????? ?????????? ???????????? ???????????????? ???????????? ????",
+        printCertBtn: "??????? ?????????? / ?????? ?????????????? PDF",
+
+        course1Title: "???????????? ???????????? ?????????? ?????????????? ???????????? XSS",
+        course1Desc: "???????? ?????? ?????????? ?????? ?????????? ?????????????? ???????????? ?????? ???????????????? ???????? ?????????????????? DOM?? ?????????????? ???? ???????????? ???????????? ??????????.",
+        course1Level: "??????????",
+        course1Duration: "3?? 40?? ?? 12 ??????????",
+        course1Curriculum: [
+          "?????????? ?????????? XSS ???? ?????? DOM ?????????????????? ????????????????",
+          "???????????? ?????????? ???? ???????????????? ???????? ???????? ????????????",
+          "?????????? ???????????? ???????? Content-Security-Policy",
+          "?????????? ?????????? ?????????? ???????? ?????????????? ??????????????"
+        ],
+        course2Title: "?????? ?????????? ???????????????? SQL ????????????????",
+        course2Desc: "???????? ???????? ???????? ???????? ???????? ?????????????????? ?????????? ?????????????????? ?????????????? ?????????? ???????????????? union?? ???????????????????????? ????????????.",
+        course2Level: "??????????",
+        course2Duration: "4?? 10?? ?? 16 ??????????",
+        course2Curriculum: [
+          "???????????? ???????? ???????? ?????????????????????? ?????? ??????????????",
+          "???????????? ???????????? ?????????? ???? ?????? union ??????????????",
+          "?????????????????????? ???????????????????? ???????????? ORM ????????????",
+          "?????????? ???????? ?????????? ???????????????? ???????? ?????????????????? ??????????????"
+        ],
+        course3Title: "???????? ???????????? ?????????????? ???????????????? ?????????? Kubernetes",
+        course3Desc: "?????????? ?????????? ?????????????? ?????????????? ?????? ???????? ?????????????????? ???????????? ???????????? Kubernetes ?????????????? ??????????????.",
+        course3Level: "??????????",
+        course3Duration: "5?? 00?? ?? 15 ??????????",
+        course3Curriculum: [
+          "?????????? ???????????? ?????????????????? RBAC ??PodSecurity",
+          "???????????? ???????? ?????????? ???????????????? ?????????????? ????????????????",
+          "?????????? ???????? ?????????????? Istio ???????????? ??????????????",
+          "???????? ?????? ?????????? ?????????? ?????????????????? ????????????????"
+        ],
+        course4Title: "?????????? ?????????????? ?????????????? ???????????? ??????????????????",
+        course4Desc: "???????? ?????????????? ?????????????? ???????????????? Ghidra?? ???????????? ?????? ???????????????? ?????????????????????? ?????????????? ???? ?????????????? ????????????.",
+        course4Level: "????????",
+        course4Duration: "6?? 30?? ?? 20 ??????????",
+        course4Curriculum: [
+          "?????????? ?????????????? ???????????????? ELF/PE ???????????????? Ghidra ??IDA",
+          "?????????? ?????????????? ???????????? ???????????? ?????????? ????????????",
+          "?????????? ???????????? ASLR ??DEP ?????????? ????????????",
+          "?????????? ?????? ?????? ?????? ???????????? ?????????????? ????????????"
+        ],
+        course5Title: "?????????? ???????? ???????????? ?????????? ?????????????????? ?????????? OAuth2/JWT",
+        course5Desc: "?????????? ???????? ?????????? REST ??GraphQL ???? ?????????? BOLA?? ???????????????? ???????????????? ???????????????? ???????????? ????????????.",
+        course5Level: "??????????",
+        course5Duration: "3?? 50?? ?? 12 ??????????",
+        course5Curriculum: [
+          "?????????? ???????? ?????????????????? ???? REST ??GraphQL",
+          "?????? ?????? ?????????????????? JWT ?????????????? ???????????? ??????????????",
+          "?????????? ???????????? OAuth2 ?????????????? ?????????????? PKCE",
+          "?????? ???????? ???????? ?????????????? ???????????? ???????????? WAF"
+        ],
+
+        researcherTitle: "???????? ???????????????? ????????????????",
+        researcherSub: "?????????????? ?????????????????? ???????????? ?????????????????? ??????????????????.",
+        badge1: "?????????????? ????????",
+        tag1: "?????????????????? ??????????????????",
+        res1Title: "???????????????? ???????????? ?????????????????? ????????????",
+        res1Desc: "?????????? ?????????? ?????? ?????????????????? ?????????????? ?????????????????? ???????????????? ???????????????? ?????????? ???? ???????? ?????????? ???????????????? ?????? ?????????? ????????????.",
+        badge2: "???????? ????????????",
+        tag2: "?????????? ??????????????",
+        res2Title: "?????????? ?????? ???????????? ?????????????? ??????????",
+        res2Desc: "?????????? ?????????????? ?????????? ?????????? ???? ?????????????? ?????????????????? ?????????? ?????????? ?????????????????? ?????????????? ???? ?????????????? ?????????????? ???????????? ?????????????? ??????????????.",
+        badge3: "???????? ??????????",
+        tag3: "???????? ???????????? ??????????????",
+        res3Title: "???????? ?????????? ?????????????? ??????????????",
+        res3Desc: "???????????? ???????????? ???????? ???????????? ???? ?????????? ???????????? ???????????? ?????????? ?????????? ?????????? ???????????? ?????????????? ???? ???????????????????? ?????? ?????????????? ????????.",
+        capabilitiesTitle: "?????????? ?????????????? ??????????????",
+        capabilitiesSub: "???????????? ?????????? ?????????????? ?????????????????? ?????? ???????? ?????????????? ?????? ???????? ????????????.",
+        serv1Title: "?????????? ?????????????? ??????????",
+        serv1Desc: "???????????????? ?????????? ?????????????? ?????????? XSS?? SQLi?? CSRF ???????????????? ???????????? ?????? ????????????????.",
+        serv2Title: "?????????????? ??????????????",
+        serv2Desc: "???????????? ?????????? ???????? ???????????? ???? ?????????? ?????????? ?????????????? ?????????????? ???????? ???????????? ???????????? ??????????????.",
+        serv3Title: "?????????????? ????????????????",
+        serv3Desc: "???????????? ???????? ?????????? ???????????????? ???? ?????????? ???????? ?????????????? ?????????? CORS?? ???????????? ???????? ??????????????.",
+        serv4Title: "???????????? ????????????",
+        serv4Desc: "?????????????? ???????? ?????????????????? ?????? ???????? 10 ?????????? ???? OWASP ???????????????? ???????? ??????????????.",
+        modalReportTitle: "?????????? ?????????? ?????? ??????????",
+        modalReportSub: "?????? ?????????????? ???????? ?????? ???????????? ?????? ???????? ???????????????? ????????????????.",
+        formEmail: "?????????? ???????????????????? (?????????????? ????????)",
+        formDomain: "???????? ?????????? ???????????????? / ????????????",
+        formVulnType: "?????? ???????????? ??????????????",
+        optXSS: "?????????? ?????????????? ???????????? ?????? ?????????????? (XSS)",
+        optSQLi: "?????? ?????????? ???????????????? (SQLi)",
+        optHeaders: "???????? ???????????? ????????????????",
+        optAuth: "?????????? ????????????????",
+        optOther: "?????? ??????",
+        formDetails: "???????????? ?????????? ?????????? ????????????",
+        detailsPlaceholder: "???????? ?????????? ?????????? ?????????? ?????????? ????????????????...",
+        sendReportBtn: "?????????? ?????????? ??????????",
+        modalAuditTitle: "?????? ?????????? ???????? ????????",
+        modalAuditSub: "???????? ?????????????????? ?????????? ?????????? ???????????? ???????????????? ????????????.",
+        formName: "?????????? ???? ??????????????",
+        formContactEmail: "???????? ??????????????",
+        formScope: "???????? ?????????????? ????????????????",
+        scopePlaceholder: "???????? ???????????????? ??????????????????...",
+        sendAuditBtn: "?????????? ?????? ??????????????",
+        footerText: "&copy; 2026 ???????????????? ?????????????? ??????????????. ???????????? ???????????? ??????????????????.",
+        signInBtn: "?????????? ????????????",
+        logoutBtn: "?????????? ????????????",
+        authTabLogin: "?????????? ????????????",
+        authTabSignup: "?????????? ????????",
+        authRequiredForCourse: "???????? ???????????? ?????????????? ???? ???????????? ??? ???????????? ???????????? ?????????? ????????????.",
+        authEmailLabel: "???????????? ????????????????????",
+        authPasswordLabel: "???????? ????????????",
+        authSubmitLogin: "?????????? ????????????",
+        authSubmitSignup: "?????????? ????????",
+        authErrGeneric: "?????? ?????? ????. ???????????? ???????????????? ?????? ????????.",
+        authErrInvalid: "???????????? ???????????????????? ???? ???????? ???????????? ?????? ??????????.",
+        authErrWeakPassword: "?????? ???? ?????????? ???????? ???????????? ???? 6 ???????? ?????? ??????????.",
+        authSignupSuccess: "???? ?????????? ????????????! ?????????? ???????? ?????????? ????????????."
+      }
+    };
+
+    function switchLanguage(lang) {
+      const t = translations[lang];
+      if (!t) return;
+
+      const root = document.getElementById("html-root");
+      root.setAttribute("dir", lang === 'ar' ? "rtl" : "ltr");
+      document.getElementById("page-title").textContent = t.pageTitle;
+
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        if (t[key]) el.innerHTML = t[key];
+      });
+
+      document.querySelectorAll("[data-i18n-placeholder]").forEach(el => {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (t[key]) el.placeholder = t[key];
+      });
+
+      ["course1", "course2", "course3", "course4", "course5"].forEach(id => {
+        const list = document.getElementById(`${id}-curriculum`);
+        const items = t[`${id}Curriculum`];
+        if (list && items) {
+          list.innerHTML = items.map(item => `<li>${escapeHtml(item)}</li>`).join("");
+        }
+      });
+
+      localStorage.setItem("symmetrix_lang", lang);
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const savedLang = localStorage.getItem("symmetrix_lang") || "en";
+      document.getElementById("lang-switcher").value = savedLang;
+      switchLanguage(savedLang);
+    });
+  </script>
+
+  <script>
+    /* LEAFLET & TELEMETRY RADAR */
+    const map = L.map('leaflet-map', {
+      center: [20, 0],
+      zoom: 2,
+      minZoom: 1,
+      maxZoom: 5,
+      zoomControl: false,
+      attributionControl: false
+    });
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      subdomains: 'abcd',
+      maxZoom: 19
+    }).addTo(map);
+
+    const canvas = document.getElementById("canvas-overlay");
+    const ctx = canvas.getContext("2d");
+
+    function resizeCanvas() {
+      const mapEl = document.getElementById("leaflet-map");
+      if (mapEl) {
+        const rect = mapEl.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+      }
+    }
+    window.addEventListener("resize", resizeCanvas);
+    setTimeout(resizeCanvas, 200);
+
+    const attackTypes = ["SQLi Attempt", "XSS Payload", "DDoS Burst", "Port Scan", "Auth Bypass", "CVE Exploit"];
+    const geoNodes = [
+      { name: "US-EAST (NY)", lat: 40.7128, lng: -74.0060 },
+      { name: "US-WEST (CA)", lat: 37.7749, lng: -122.4194 },
+      { name: "EU-CENTRAL (DE)", lat: 50.1109, lng: 8.6821 },
+      { name: "UK-LONDON", lat: 51.5074, lng: -0.1278 },
+      { name: "AP-SOUTH (IN)", lat: 19.0760, lng: 72.8777 },
+      { name: "SA-EAST (BR)", lat: -23.5505, lng: -46.6333 },
+      { name: "AF-SOUTH (ZA)", lat: -26.2041, lng: 28.0473 },
+      { name: "AP-NORTHEAST (JP)", lat: 35.6762, lng: 139.6503 },
+      { name: "AU-EAST (SYD)", lat: -33.8688, lng: 151.2093 }
+    ];
+
+    let activeParticles = [];
+    const attackStream = document.getElementById("attack-stream");
+
+    function triggerAttackAnimation() {
+      if (!attackStream) return;
+      const src = geoNodes[Math.floor(Math.random() * geoNodes.length)];
+      let dst = geoNodes[Math.floor(Math.random() * geoNodes.length)];
+      while (src === dst) { dst = geoNodes[Math.floor(Math.random() * geoNodes.length)]; }
+
+      const type = attackTypes[Math.floor(Math.random() * attackTypes.length)];
+      const startPt = map.latLngToContainerPoint([src.lat, src.lng]);
+      const endPt = map.latLngToContainerPoint([dst.lat, dst.lng]);
+
+      activeParticles.push({
+        x1: startPt.x, y1: startPt.y,
+        x2: endPt.x, y2: endPt.y,
+        progress: 0,
+        speed: 0.025 + Math.random() * 0.015
+      });
+
+      const logItem = document.createElement("div");
+      logItem.className = "stream-item";
+      logItem.innerHTML = `
+        <span class="stream-type">${type}</span>
+        <span>${src.name} ??? <span class="stream-target">${dst.name}</span></span>
+      `;
+      attackStream.prepend(logItem);
+      if (attackStream.children.length > 20) attackStream.removeChild(attackStream.lastChild);
+
+      const alertTag = L.divIcon({
+        className: 'alert-tag',
+        html: `ALERT: ${type}`,
+        iconSize: [85, 24]
+      });
+      const marker = L.marker([dst.lat, dst.lng], { icon: alertTag }).addTo(map);
+      setTimeout(() => map.removeLayer(marker), 1800);
+    }
+
+    function renderCanvasArcs() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = activeParticles.length - 1; i >= 0; i--) {
+        const p = activeParticles[i];
+        p.progress += p.speed;
+        const curX = p.x1 + (p.x2 - p.x1) * p.progress;
+        const curY = p.y1 + (p.y2 - p.y1) * p.progress - Math.sin(p.progress * Math.PI) * 40;
+
+        ctx.beginPath();
+        ctx.strokeStyle = '#ff2a4b';
+        ctx.lineWidth = 2.5;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = '#ff2a4b';
+        ctx.arc(curX, curY, 3.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.stroke();
+
+        if (p.progress >= 1) activeParticles.splice(i, 1);
+      }
+      requestAnimationFrame(renderCanvasArcs);
+    }
+    renderCanvasArcs();
+    setInterval(triggerAttackAnimation, 1100);
+
+    /* RSS FEEDS */
+    const FEEDS = [
+      { name: "The Hacker News", url: "https://feeds.feedburner.com/TheHackersNews" },
+      { name: "BleepingComputer", url: "https://www.bleepingcomputer.com/feed/" },
+      { name: "CISA Advisories", url: "https://www.cisa.gov/cybersecurity-advisories/all.xml" }
+    ];
+
+    let allArticles = [];
+    const newsContainer = document.getElementById("news-container");
+    const statusText = document.getElementById("status-text");
+    const searchBar = document.getElementById("search-bar");
+    const refreshBtn = document.getElementById("refresh-btn");
+    const eventCountEl = document.getElementById("event-count");
+
+    function renderSkeletons() {
+      if (!newsContainer) return;
+      newsContainer.innerHTML = Array(6).fill(0).map(() => `<div class="skeleton-card skeleton"></div>`).join("");
+    }
+
+    async function fetchThreatFeeds() {
+      renderSkeletons();
+      if (statusText) statusText.textContent = "Syncing live feeds...";
+      allArticles = [];
+      try {
+        const promises = FEEDS.map(async feed => {
+          const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}`);
+          const data = await res.json();
+          if (data.status === 'ok') {
+            return data.items.map(item => ({
+              title: item.title,
+              link: item.link,
+              pubDate: new Date(item.pubDate),
+              description: stripHTML(item.description || item.content || ''),
+              source: feed.name
+            }));
+          }
+          return [];
+        });
+        const results = await Promise.all(promises);
+        allArticles = results.flat().sort((a, b) => b.pubDate - a.pubDate);
+        if (statusText) statusText.textContent = `Updated: ${new Date().toLocaleTimeString()}`;
+        if (eventCountEl) eventCountEl.textContent = allArticles.length;
+        renderArticles(allArticles);
+      } catch (err) {
+        if (statusText) statusText.textContent = "Error fetching live feeds.";
+      }
+    }
+
+    function stripHTML(htmlStr) {
+      const doc = new DOMParser().parseFromString(htmlStr, 'text/html');
+      return doc.body.textContent || "";
+    }
+
+    function getSeverityTag(title, description) {
+      const text = (title + " " + description).toLowerCase();
+      if (text.includes("critical") || text.includes("zero-day") || text.includes("ransomware")) {
+        return `<span class="tag tag-critical">Critical Risk</span>`;
+      } else if (text.includes("cve") || text.includes("exploit") || text.includes("vulnerability") || text.includes("patch")) {
+        return `<span class="tag tag-high">Vulnerability</span>`;
+      }
+      return `<span class="tag tag-info">Advisory</span>`;
+    }
+
+    function renderArticles(articles) {
+      if (!newsContainer) return;
+      if (articles.length === 0) {
+        newsContainer.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: var(--text-muted); padding: 3rem;">No security advisories found.</div>`;
+        return;
+      }
+      newsContainer.innerHTML = articles.map(art => `
+        <article class="news-card">
+          <div>
+            <div class="card-top">
+              <span class="card-source">${escapeHtml(art.source)}</span>
+              ${getSeverityTag(art.title, art.description)}
+            </div>
+            <h3 class="card-title">
+              <a href="${escapeHtml(art.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(art.title)}</a>
+            </h3>
+            <p class="card-snippet">${escapeHtml(art.description)}</p>
+          </div>
+          <div class="card-meta">
+            <span>${timeAgo(art.pubDate)}</span>
+            <span>Source Link &#8599;</span>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
+
+    function timeAgo(date) {
+      const seconds = Math.floor((new Date() - date) / 1000);
+      let interval = Math.floor(seconds / 3600);
+      if (interval >= 1) return `${interval}h ago`;
+      interval = Math.floor(seconds / 60);
+      if (interval >= 1) return `${interval}m ago`;
+      return "Just now";
+    }
+
+    if (searchBar) {
+      searchBar.addEventListener("input", (e) => {
+        const term = e.target.value.toLowerCase();
+        renderArticles(allArticles.filter(art => art.title.toLowerCase().includes(term) || art.description.toLowerCase().includes(term)));
+      });
+    }
+    if (refreshBtn) refreshBtn.addEventListener("click", fetchThreatFeeds);
+
+    async function submitAnonymousForm(event, formElement, modalId) {
+      event.preventDefault();
+      const formData = new FormData(formElement);
+      try {
+        const response = await fetch("https://formsubmit.co/ajax/daniel.dl.dev.tech@gmail.com", {
+          method: "POST",
+          body: formData,
+          headers: { 'Accept': 'application/json' }
+        });
+        if (response.ok) {
+          alert("Submission received securely!");
+          formElement.reset();
+          closeModal(modalId);
+        } else {
+          alert("Error submitting form.");
+        }
+      } catch (error) {
+        alert("Network error.");
+      }
+    }
+
+    /* ======================================================================
+       STRIPE & AUTH CONFIGURATION WITH ROBUST LOCAL DEMO FALLBACK
+       ====================================================================== */
+    const APP_CONFIG = {
+      SUPABASE_URL: "https://YOUR-PROJECT-REF.supabase.co",
+      SUPABASE_ANON_KEY: "YOUR_SUPABASE_ANON_PUBLIC_KEY",
+      GOOGLE_CLIENT_ID: "REPLACE_WITH_YOUR_GOOGLE_CLIENT_ID.apps.googleusercontent.com",
+      STRIPE_PUBLISHABLE_KEY: "pk_live_REPLACE_WITH_YOUR_STRIPE_PUBLISHABLE_KEY",
+      STRIPE_PAYMENT_LINKS: {
+        course1: "https://buy.stripe.com/REPLACE_WITH_COURSE1_LINK",
+        course2: "https://buy.stripe.com/REPLACE_WITH_COURSE2_LINK",
+        course3: "https://buy.stripe.com/REPLACE_WITH_COURSE3_LINK",
+        course4: "https://buy.stripe.com/REPLACE_WITH_COURSE4_LINK",
+        course5: "https://buy.stripe.com/REPLACE_WITH_COURSE5_LINK"
+      }
+    };
+
+    const COURSE_LOOKUP = {
+      course1: { titleKey: "course1Title", price: "$49.99" },
+      course2: { titleKey: "course2Title", price: "$79.99" },
+      course3: { titleKey: "course3Title", price: "$89.99" },
+      course4: { titleKey: "course4Title", price: "$129.99" },
+      course5: { titleKey: "course5Title", price: "$59.99" }
+    };
+
+    const isSupabaseConfigured = APP_CONFIG.SUPABASE_URL && !APP_CONFIG.SUPABASE_URL.includes("YOUR-PROJECT");
+    const supabaseClient = isSupabaseConfigured
+      ? window.supabase.createClient(APP_CONFIG.SUPABASE_URL, APP_CONFIG.SUPABASE_ANON_KEY)
+      : null;
+
+    let currentUser = null;
+    let pendingCourseId = null;
+    let stripeInstance = null;
+    let cardElement = null;
+
+    try {
+      if (window.Stripe && !APP_CONFIG.STRIPE_PUBLISHABLE_KEY.includes("REPLACE")) {
+        stripeInstance = Stripe(APP_CONFIG.STRIPE_PUBLISHABLE_KEY);
+        const elements = stripeInstance.elements();
+        cardElement = elements.create('card', {
+          style: {
+            base: {
+              color: '#e2e8f0',
+              fontFamily: "'Fira Code', monospace",
+              fontSmoothing: 'antialiased',
+              fontSize: '14px',
+              '::placeholder': { color: '#8092b0' }
+            },
+            invalid: { color: '#ff2a4b', iconColor: '#ff2a4b' }
+          }
+        });
+      }
+    } catch (e) {
+      console.warn("Stripe Elements note:", e);
+    }
+
+    function refreshAuthUI() {
+      const signInBtn = document.getElementById("auth-signin-btn");
+      const chip = document.getElementById("auth-chip");
+      const avatar = document.getElementById("auth-avatar");
+      const label = document.getElementById("auth-chip-label");
+      const emailRow = document.getElementById("auth-dropdown-email");
+
+      if (currentUser) {
+        signInBtn.style.display = "none";
+        chip.style.display = "flex";
+        const email = currentUser.email || "";
+        const displayName = currentUser.name || email.split("@")[0] || "User";
+        avatar.textContent = (displayName.charAt(0) || "?").toUpperCase();
+        label.textContent = displayName.length > 14 ? `${displayName.slice(0, 14)}???` : displayName;
+        emailRow.textContent = email;
+      } else {
+        signInBtn.style.display = "inline-flex";
+        chip.style.display = "none";
+        document.getElementById("auth-dropdown").classList.remove("open");
+      }
+    }
+
+    function toggleAuthDropdown() {
+      document.getElementById("auth-dropdown").classList.toggle("open");
+    }
+
+    document.addEventListener("click", (e) => {
+      const chip = document.getElementById("auth-chip");
+      if (chip && !chip.contains(e.target)) {
+        document.getElementById("auth-dropdown").classList.remove("open");
+      }
+    });
+
+    function handleGoogleCredentialResponse(response) {
+      try {
+        const token = response?.credential;
+        if (!token) {
+          throw new Error('Google sign-in was cancelled.');
+        }
+
+        const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        const profile = {
+          name: payload.name || payload.given_name || 'Google User',
+          email: payload.email,
+          picture: payload.picture || ''
+        };
+
+        currentUser = {
+          email: profile.email,
+          name: profile.name,
+          avatar: profile.picture,
+          authProvider: 'google',
+          isGoogleUser: true
+        };
+
+        localStorage.setItem("symmetrix_demo_user", JSON.stringify(currentUser));
+        refreshAuthUI();
+        closeModal('auth-modal');
+        document.getElementById('auth-form').reset();
+        if (pendingCourseId) {
+          const id = pendingCourseId;
+          pendingCourseId = null;
+          openCheckoutModal(id);
+        }
+      } catch (err) {
+        showAuthError(err.message || 'Google sign-in failed.');
+      }
+    }
+
+    function initGoogleAuth() {
+      const isGoogleConfigured = APP_CONFIG.GOOGLE_CLIENT_ID && !APP_CONFIG.GOOGLE_CLIENT_ID.includes('REPLACE_WITH');
+      if (!window.google || !isGoogleConfigured) return;
+
+      window.google.accounts.id.initialize({
+        client_id: APP_CONFIG.GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredentialResponse,
+        auto_select: false
+      });
+    }
+
+    async function initAuth() {
+      if (supabaseClient) {
+        try {
+          const { data } = await supabaseClient.auth.getSession();
+          currentUser = data?.session?.user || null;
+          refreshAuthUI();
+          supabaseClient.auth.onAuthStateChange((_event, session) => {
+            currentUser = session?.user || null;
+            refreshAuthUI();
+          });
+          return;
+        } catch (err) {
+          console.warn("Supabase session check failed, using local fallback.");
+        }
+      }
+
+      const localUser = localStorage.getItem("symmetrix_demo_user");
+      if (localUser) {
+        currentUser = JSON.parse(localUser);
+      }
+      refreshAuthUI();
+      initGoogleAuth();
+    }
+
+    async function handleGoogleLogin() {
+      const isGoogleConfigured = APP_CONFIG.GOOGLE_CLIENT_ID && !APP_CONFIG.GOOGLE_CLIENT_ID.includes('REPLACE_WITH');
+      if (window.google && isGoogleConfigured) {
+        try {
+          window.google.accounts.id.prompt();
+          return;
+        } catch (err) {
+          console.warn('Google prompt failed:', err);
+        }
+      }
+
+      showAuthError('Google Sign-In is not configured yet. Add your real Google OAuth Client ID in the app config and refresh the page.');
+    }
+
+    let authMode = "login";
+    function openAuthModal(mode, courseIdIfPending) {
+      pendingCourseId = courseIdIfPending || null;
+      setAuthTab(mode);
+      document.getElementById("auth-context-hint").style.display = pendingCourseId ? "block" : "none";
+      document.getElementById("auth-error").style.display = "none";
+      openModal("auth-modal");
+    }
+
+    function setAuthTab(mode) {
+      authMode = mode;
+      const t = translations[document.getElementById("lang-switcher").value];
+      document.getElementById("auth-tab-login").classList.toggle("active", mode === "login");
+      document.getElementById("auth-tab-signup").classList.toggle("active", mode === "signup");
+      document.getElementById("auth-submit-btn").textContent = mode === "login" ? t.authSubmitLogin : t.authSubmitSignup;
+      document.getElementById("auth-error").style.display = "none";
+    }
+
+    function showAuthError(message) {
+      const box = document.getElementById("auth-error");
+      box.textContent = message;
+      box.style.display = "block";
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      const t = translations[document.getElementById("lang-switcher").value];
+      const email = document.getElementById("auth-email").value.trim();
+      const password = document.getElementById("auth-password").value;
+
+      const submitBtn = document.getElementById("auth-submit-btn");
+      submitBtn.disabled = true;
+
+      try {
+        if (supabaseClient) {
+          if (authMode === "login") {
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+            if (error) throw error;
+            currentUser = data.user;
+          } else {
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
+            if (error) throw error;
+            if (data.user && !data.session) {
+              alert(t.authSignupSuccess);
+              setAuthTab("login");
+              submitBtn.disabled = false;
+              return;
+            }
+            currentUser = data.user;
+          }
+        } else {
+          // Local demo authentication fallback
+          if (password.length < 6) throw new Error(t.authErrWeakPassword);
+          currentUser = { email };
+          localStorage.setItem("symmetrix_demo_user", JSON.stringify(currentUser));
+        }
+
+        refreshAuthUI();
+        closeModal("auth-modal");
+        document.getElementById("auth-form").reset();
+        if (pendingCourseId) {
+          const id = pendingCourseId;
+          pendingCourseId = null;
+          openCheckoutModal(id);
+        }
+      } catch (err) {
+        showAuthError(err.message || t.authErrGeneric);
+      } finally {
+        submitBtn.disabled = false;
+      }
+    }
+
+    async function handleLogout() {
+      if (supabaseClient) await supabaseClient.auth.signOut();
+      localStorage.removeItem("symmetrix_demo_user");
+      currentUser = null;
+      refreshAuthUI();
+    }
+
+    /* CHECKOUT & STRIPE */
+    let activeCheckoutCourseId = null;
+
+    function openCheckoutModal(courseId) {
+      if (!currentUser) {
+        openAuthModal("login", courseId);
+        return;
+      }
+      const course = COURSE_LOOKUP[courseId];
+      if (!course) return;
+      activeCheckoutCourseId = courseId;
+
+      const t = translations[document.getElementById("lang-switcher").value];
+      document.getElementById("checkout-course-name").textContent = t[course.titleKey];
+      document.getElementById("checkout-course-price").textContent = course.price;
+      document.getElementById("checkout-account-email").textContent = currentUser.email;
+
+      openModal("checkout-modal");
+
+      setTimeout(() => {
+        const container = document.getElementById("stripe-card-element");
+        if (cardElement && container && container.childElementCount === 0) {
+          cardElement.mount('#stripe-card-element');
+        } else if (container && container.childElementCount === 0) {
+          container.innerHTML = '<div class="checkout-card-placeholder">Card collection is handled on Stripe Checkout. Use the secure payment button below.</div>';
+        }
+      }, 100);
+    }
+
+    async function processStripePayment() {
+      const button = document.getElementById("stripe-pay-btn");
+      const indicator = document.getElementById("processing-indicator");
+      if (!activeCheckoutCourseId || !currentUser) {
+        openAuthModal("login", activeCheckoutCourseId || null);
+        return;
+      }
+
+      button.disabled = true;
+      button.textContent = "Processing...";
+      indicator.classList.add("visible");
+
+      try {
+        const response = await fetch("/api/create-checkout-session", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ courseId: activeCheckoutCourseId, email: currentUser.email })
+        });
+        const data = await response.json().catch(() => ({}));
+        if (data.url) {
+          window.location.href = data.url;
+          return;
+        }
+
+        throw new Error(data.error || 'No Stripe checkout URL returned.');
+      } catch (e) {
+        showAuthError(e.message || 'Unable to start secure checkout. Please try again.');
+      } finally {
+        button.disabled = false;
+        button.textContent = "Pay Securely with Card";
+        indicator.classList.remove("visible");
+      }
+    }
+
+    function goToStripeCheckout() {
+      const link = APP_CONFIG.STRIPE_PAYMENT_LINKS[activeCheckoutCourseId];
+      if (!link || link.includes("REPLACE_WITH")) {
+        showAuthError('Stripe checkout is not configured yet. Add your real Stripe payment links to enable card checkout.');
+        return;
+      }
+      const email = currentUser ? encodeURIComponent(currentUser.email) : "";
+      window.open(email ? `${link}?prefilled_email=${email}` : link, "_blank", "noopener,noreferrer");
+      closeModal("checkout-modal");
+    }
+
+    function grantCourseAccess(courseId) {
+      let enrolled = JSON.parse(localStorage.getItem("symmetrix_enrolled") || "[]");
+      if (!enrolled.includes(courseId)) {
+        enrolled.push(courseId);
+        localStorage.setItem("symmetrix_enrolled", JSON.stringify(enrolled));
+      }
+    }
+
+    function openEnrolledCoursesModal() {
+      if (!currentUser) {
+        openAuthModal("login");
+        return;
+      }
+      const enrolled = JSON.parse(localStorage.getItem("symmetrix_enrolled") || "[]");
+      const listEl = document.getElementById("enrolled-courses-list");
+      const t = translations[document.getElementById("lang-switcher").value];
+
+      if (enrolled.length === 0) {
+        listEl.innerHTML = `<p style="color:var(--text-muted); text-align:center; padding:2rem;">No courses purchased yet. Choose an academy course above to enroll.</p>`;
+      } else {
+        listEl.innerHTML = enrolled.map(id => {
+          const c = COURSE_LOOKUP[id];
+          const title = c ? t[c.titleKey] : id;
+          return `
+            <div style="background:var(--bg-color); border:1px solid var(--border-color); padding:1rem; border-radius:8px; display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <h4 style="color:#fff; font-size:1rem; margin-bottom:0.25rem;">${escapeHtml(title)}</h4>
+                <span style="font-size:0.75rem; color:var(--accent-green); font-family:var(--font-mono);">Status: Active Access</span>
+              </div>
+              <button class="btn-primary" style="font-size:0.75rem; padding:0.4rem 0.8rem;" onclick="openCertificateModal('${escapeHtml(title)}')">View Certificate</button>
+            </div>
+          `;
+        }).join("");
+      }
+      openModal("enrolled-modal");
+    }
+
+    function openCertificateModal(courseTitle) {
+      document.getElementById("cert-user-name").textContent = currentUser ? currentUser.email : "student@symmetrix.dev";
+      document.getElementById("cert-course-title").textContent = courseTitle;
+      openModal("certificate-modal");
+    }
+
+    function openModal(modalId) { document.getElementById(modalId).style.display = "flex"; }
+    function closeModal(modalId) { document.getElementById(modalId).style.display = "none"; }
+
+    const assistantHistory = [];
+
+    function toggleAssistant() {
+      const panel = document.getElementById('assistant-panel');
+      const launcher = document.getElementById('assistant-launcher');
+      const isOpen = panel.classList.toggle('open');
+      launcher.setAttribute('aria-expanded', String(isOpen));
+      if (isOpen) document.getElementById('assistant-input').focus();
+    }
+
+    function addAssistantMessage(text, role) {
+      const messages = document.getElementById('assistant-messages');
+      const message = document.createElement('div');
+      message.className = `assistant-message ${role}`;
+      message.textContent = text;
+      messages.appendChild(message);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function updateAssistantPrompts(message) {
+      const prompts = document.getElementById('assistant-prompts');
+      const query = message.toLowerCase();
+      const options = query.includes('authorized') || query.includes('context')
+        ? ['It is authorized; help me triage.', 'It is authorized; help me remediate.', 'Help me structure a report.']
+        : query.includes('header')
+          ? ['How do I test CSP safely?', 'Show me a header checklist.', 'How do I monitor violations?']
+          : ['What asset are you investigating?', 'What evidence should I collect?', 'What is the safest next step?'];
+      prompts.innerHTML = options.map(option => `<button class="assistant-prompt" type="button">${escapeHtml(option)}</button>`).join('');
+      prompts.querySelectorAll('.assistant-prompt').forEach(button => button.addEventListener('click', () => askAssistant(button.textContent)));
+    }
+
+    async function askAssistant(message) {
+      const input = document.getElementById('assistant-input');
+      const question = (message || input.value).trim();
+      if (!question) return;
+      input.value = '';
+      addAssistantMessage(question, 'user');
+      assistantHistory.push({ role: 'user', content: question });
+      addAssistantMessage('Reviewing your question...', 'bot');
+      const messages = document.getElementById('assistant-messages');
+      const pending = messages.lastElementChild;
+
+      try {
+        const response = await fetch('/api/assistant', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: question, history: assistantHistory.slice(-8, -1) })
+        });
+        const data = await response.json().catch(() => ({}));
+        pending.textContent = response.ok && data.answer
+          ? data.answer
+          : 'Generative AI is not connected. Start the Vercel runtime and configure OPENAI_API_KEY to enable live answers.';
+      } catch (error) {
+        pending.textContent = 'Generative AI is unavailable from this server. Run npm run vercel-dev with OPENAI_API_KEY configured to enable live answers.';
+      }
+      assistantHistory.push({ role: 'assistant', content: pending.textContent });
+      updateAssistantPrompts(pending.textContent);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    function submitAssistant(event) {
+      event.preventDefault();
+      askAssistant();
+    }
+
+    initAuth();
+
+    window.onclick = function(event) {
+      if (event.target.classList.contains('modal-overlay')) {
+        event.target.style.display = "none";
+      }
+    }
+
+    fetchThreatFeeds();
+    setInterval(fetchThreatFeeds, 300000);
+  </script>
+</body>
+</html>

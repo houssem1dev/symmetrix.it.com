@@ -886,7 +886,7 @@
       line-height: 1.4;
     }
     .curriculum-list li::before {
-      content: '???';
+      content: '>_';
       color: var(--accent-green);
       font-weight: 700;
       flex-shrink: 0;
@@ -1021,7 +1021,7 @@
     .assistant-head { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; border-bottom: 1px solid var(--border-color); }
     .assistant-title { color: #fff; font: 700 0.82rem var(--font-mono); letter-spacing: 0.05em; }
     .assistant-status { color: var(--accent-green); font: 0.65rem var(--font-mono); }
-    .assistant-status::before { content: '??? '; }
+    .assistant-status::before { content: '> '; }
     .assistant-close { border: 0; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; }
     .assistant-messages { display: flex; flex-direction: column; gap: 0.65rem; max-height: 280px; overflow-y: auto; padding: 1rem; }
     .assistant-message { max-width: 92%; padding: 0.65rem 0.75rem; border-radius: 4px; color: var(--text-main); font-size: 0.78rem; line-height: 1.5; white-space: pre-wrap; }
@@ -1072,7 +1072,7 @@
   <!-- HEADER -->
   <header>
     <div class="brand">
-      <span class="brand-shield">???????</span>
+      <span class="brand-shield">[SEC]</span>
       <span>Symmetrix</span>
       <div class="live-indicator" title="Feeds Active"></div>
     </div>
@@ -1084,7 +1084,7 @@
       <select id="lang-switcher" class="lang-select" onchange="switchLanguage(this.value)">
         <option value="en">English</option>
         <option value="fr">Fran??ais</option>
-        <option value="ar">??????????????</option>
+        <option value="ar">Arabic</option>
       </select>
       <div class="status-bar" id="status-text" data-i18n="initSync">Initializing feed sync...</div>
 
@@ -1103,7 +1103,7 @@
       </div>
 
       <button class="btn-primary" onclick="openModal('report-modal')">
-        <span>???</span> <span data-i18n="reportVulnBtn">Report Vulnerability</span>
+        <span>[!]</span> <span data-i18n="reportVulnBtn">Report Vulnerability</span>
       </button>
     </div>
   </header>
@@ -1112,7 +1112,7 @@
   <section class="hero">
     <div class="hero-content">
       <span class="hero-badge">
-        <span>???</span> <span data-i18n="heroBadge">White-Hat Security & Ethical Research</span>
+        <span>[+]</span> <span data-i18n="heroBadge">White-Hat Security & Ethical Research</span>
       </span>
       <h1 data-i18n="heroTitle">Protecting Applications Through <span>Responsible Disclosure</span></h1>
       <p data-i18n="heroSubtitle">Symmetrix is an ethical security research group. We identify website bugs, audit infrastructure, and help developers patch security risks safely.</p>
@@ -1176,7 +1176,7 @@
 
     <div class="controls">
       <input type="text" id="search-bar" class="search-input" placeholder="Search advisories (e.g., CVE, Zero-day)..." data-i18n-placeholder="searchPlaceholder" />
-      <button class="refresh-btn" id="refresh-btn">???? <span data-i18n="refreshBtn">Refresh Feeds</span></button>
+      <button class="refresh-btn" id="refresh-btn">[R] <span data-i18n="refreshBtn">Refresh Feeds</span></button>
     </div>
 
     <div class="news-grid" id="news-container"></div>
@@ -1238,22 +1238,22 @@
 
     <div class="services-grid">
       <div class="service-card">
-        <div class="service-icon">????</div>
+        <div class="service-icon">[WEB]</div>
         <h3 data-i18n="serv1Title">Web Application Auditing</h3>
         <p data-i18n="serv1Desc">Comprehensive testing to discover XSS, SQLi, CSRF, and authorization flaws before malicious hackers do.</p>
       </div>
       <div class="service-card">
-        <div class="service-icon">???????</div>
+        <div class="service-icon">[DISC]</div>
         <h3 data-i18n="serv2Title">Responsible Disclosure</h3>
         <p data-i18n="serv2Desc">Private and detailed bug reports with exact reproduction steps delivered directly to website owners.</p>
       </div>
       <div class="service-card">
-        <div class="service-icon">??????</div>
+        <div class="service-icon">[FIX]</div>
         <h3 data-i18n="serv3Title">Remediation Guidance</h3>
         <p data-i18n="serv3Desc">Step-by-step assistance for developers on configuring security headers, fixing CORS, and securing endpoints.</p>
       </div>
       <div class="service-card">
-        <div class="service-icon">????</div>
+        <div class="service-icon">[STD]</div>
         <h3 data-i18n="serv4Title">Security Standards</h3>
         <p data-i18n="serv4Desc">Best practice guidance on OWASP Top 10 vulnerabilities and server hardening procedures.</p>
       </div>
@@ -1348,7 +1348,7 @@
         <div style="flex:1; height:1px; background:var(--border-color);"></div>
       </div>
 
-      <p id="auth-context-hint" class="auth-hint" style="display:none;" data-i18n="authRequiredForCourse">Sign in to enroll ??? course access is tied to your account.</p>
+      <p id="auth-context-hint" class="auth-hint" style="display:none;" data-i18n="authRequiredForCourse">Sign in to enroll -- course access is tied to your account.</p>
       <div class="auth-error" id="auth-error"></div>
 
       <form id="auth-form" onsubmit="handleAuthSubmit(event)">
@@ -1358,7 +1358,7 @@
         </div>
         <div class="form-group">
           <label data-i18n="authPasswordLabel">Password</label>
-          <input type="password" id="auth-password" placeholder="????????????????????????" minlength="6" required />
+          <input type="password" id="auth-password" placeholder="Enter password" minlength="6" required />
         </div>
         <button type="submit" class="btn-primary" id="auth-submit-btn" style="width:100%; justify-content:center; padding:0.75rem;" data-i18n="authSubmitLogin">Log In</button>
       </form>
@@ -1419,16 +1419,16 @@
 
       <div style="display: flex; gap: 0.75rem; margin-top: 1rem;">
         <button class="btn-primary" id="stripe-pay-btn" style="flex:1; justify-content:center; padding:0.8rem;" onclick="processStripePayment()" data-i18n="payNowBtn">Pay Securely with Card</button>
-        <button class="btn-secondary" style="padding:0.8rem;" onclick="goToStripeCheckout()" title="Open Stripe Checkout Page">Stripe Page ???</button>
+        <button class="btn-secondary" style="padding:0.8rem;" onclick="goToStripeCheckout()" title="Open Stripe Checkout Page">Stripe Page &gt;</button>
       </div>
 
-      <div class="processing-indicator" id="processing-indicator">Processing secure payment???</div>
+      <div class="processing-indicator" id="processing-indicator">Processing secure payment...</div>
 
       <div class="checkout-trust">
-        <span>???? Visa / MC / Amex</span>
-        <span>???? Apple Pay</span>
-        <span>???? Google Pay</span>
-        <span>???? 256-Bit SSL</span>
+        <span>CARDS Visa / MC / Amex</span>
+        <span>APPLE PAY</span>
+        <span>GOOGLE PAY</span>
+        <span>TLS 256-BIT</span>
       </div>
     </div>
   </div>
@@ -2057,7 +2057,7 @@
       logItem.className = "stream-item";
       logItem.innerHTML = `
         <span class="stream-type">${type}</span>
-        <span>${src.name} ??? <span class="stream-target">${dst.name}</span></span>
+        <span>${src.name} -&gt; <span class="stream-target">${dst.name}</span></span>
       `;
       attackStream.prepend(logItem);
       if (attackStream.children.length > 20) attackStream.removeChild(attackStream.lastChild);

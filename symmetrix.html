@@ -2650,7 +2650,7 @@
         const data = await response.json().catch(() => ({}));
         pending.textContent = response.ok && data.answer
           ? data.answer
-          : 'Generative AI is not configured on this deployment. Add OPENAI_API_KEY in Vercel project settings to enable live answers.';
+          : 'Generative AI is not configured on this deployment. Add GEMINI_API_KEY in Vercel project settings to enable live answers.';
       } catch (error) {
         pending.textContent = 'Generative AI is temporarily unavailable. Check the Vercel deployment and OPENAI_API_KEY configuration.';
       }

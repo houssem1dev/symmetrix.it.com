@@ -1021,7 +1021,6 @@
     .assistant-head { display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1rem; border-bottom: 1px solid var(--border-color); }
     .assistant-title { color: #fff; font: 700 0.82rem var(--font-mono); letter-spacing: 0.05em; }
     .assistant-status { color: var(--accent-green); font: 0.65rem var(--font-mono); }
-    .assistant-status::before { content: '> '; }
     .assistant-close { border: 0; background: transparent; color: var(--text-muted); cursor: pointer; font-size: 1.2rem; }
     .assistant-messages { display: flex; flex-direction: column; gap: 0.65rem; max-height: 280px; overflow-y: auto; padding: 1rem; }
     .assistant-message { max-width: 92%; padding: 0.65rem 0.75rem; border-radius: 4px; color: var(--text-main); font-size: 0.78rem; line-height: 1.5; white-space: pre-wrap; }
@@ -1478,7 +1477,7 @@
   <button class="assistant-launcher" id="assistant-launcher" type="button" aria-expanded="false" aria-controls="assistant-panel" onclick="toggleAssistant()">AI / SOC COPILOT</button>
   <aside class="assistant-panel" id="assistant-panel" aria-label="AI security assistant">
     <div class="assistant-head">
-      <div><div class="assistant-title">SOC COPILOT</div><div class="assistant-status">GENERATIVE / DEFENSIVE MODE</div></div>
+      <div><div class="assistant-title">SOC COPILOT</div><div class="assistant-status">[AI] GENERATIVE / DEFENSIVE MODE</div></div>
       <button class="assistant-close" type="button" aria-label="Close assistant" onclick="toggleAssistant()">&times;</button>
     </div>
     <div class="assistant-messages" id="assistant-messages" aria-live="polite">
